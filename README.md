@@ -5,11 +5,11 @@ Statische Shop-Vorschau für GitHub Pages. Die Produktdaten und Preise sind Beis
 ## Übernahme in ein Shopify-Theme
 
 - Header, Kampagne, Kollektion und Editorial sind eigenständige HTML-Bereiche. Sie können als Liquid-Sections in ein Theme übernommen werden.
-- CSS, Bilddateien und die Liquid-Glass-Module können als Theme-Assets geladen werden. Dateinamen und relative Verweise der beiden Bibliotheksmodule beibehalten oder über die URL des Shopify-Assets auflösen.
+- CSS, Bilddateien und die Liquid-Glass-Module können als Theme-Assets geladen werden. Dateinamen und relative Modulverweise im Theme übernehmen oder über die Shopify-Asset-URLs auflösen.
 - Platzhalterprodukte durch Shopify-Kollektionen, Produktobjekte und Varianten ersetzen und Suche sowie Warenkorb mit den Funktionen des Ziel-Themes verbinden.
-- Für die Navigation die Klassen `.masthead` und `.bar`, die CSS-Regeln für `.is-scrolled` und die Scroll-Logik aus `store.js` übernehmen. Die eigene, abgerundete Verschiebungskarte in `nav-refraction.js` nutzt den SVG-Filter der mitgelieferten Bibliothek. Chrome und andere Chromium-Browser brechen damit den Live-Hintergrund. Mobile Browser und Desktop-Browser ohne nativen SVG-Backdrop berechnen die Kantenbrechung mit demselben Profil in `scene-refraction.js`. Bilder und Text werden anhand der tatsächlichen Layoutpositionen einmal pro Abschnitt vorbereitet. WebGL zeichnet beim Scrollen den schmalen Glasrand. Ohne WebGL zeichnet `campaign-refraction.js` die Kante aus den Shop-Bildern. Die reduzierte Transparenz wird berücksichtigt. [Technischer Hintergrund](https://kube.io/blog/liquid-glass-css-svg/)
+- Für die Navigation `.masthead`, `.bar`, die Regeln für `.is-scrolled` und die Scroll-Logik aus `store.js` übernehmen. Chromium nutzt die SVG-Verschiebungskarte auf dem Live-Hintergrund. Browser ohne SVG-Backdrop, darunter Safari und Chrome auf dem iPhone, verwenden Glass SDK 0.0.3-beta.4 mit einem WebGL-Worker und einer auf ALOUÉ abgestimmten Kantenbrechung. Die Module `scene-refraction.js` und `campaign-refraction.js` übernehmen die Brechung auf älteren Geräten. Die Einstellung für reduzierte Transparenz gilt für alle Varianten.
 
-[Shopify Theme-Architektur](https://shopify.dev/docs/storefronts/themes/architecture) · [Liquid Glass 0.3.0](https://www.npmjs.com/package/@dpawlikowski/liquid-glass/v/0.3.0) · [MIT-Lizenz](liquid-glass-license.txt)
+[Shopify Theme-Architektur](https://shopify.dev/docs/storefronts/themes/architecture) · [Liquid Glass 0.3.0](https://www.npmjs.com/package/@dpawlikowski/liquid-glass/v/0.3.0) · [MIT-Lizenz](liquid-glass-license.txt) · [Glass SDK 0.0.3-beta.4](https://github.com/Glass-HQ/liquid-glass/releases/tag/liquid-glass%400.0.3-beta.4) · [MIT-Lizenz](glass-sdk-license.txt)
 
 ## Platzhalterbilder
 

@@ -20,8 +20,8 @@ const updateGlass = () => {
 onTransparencyChange(updateGlass);
 updateGlass();
 
-import('./nav-refraction.js?v=fast-scroll').then(({ attachNavRefraction }) => {
-  const updateMap = attachNavRefraction(bar);
+import('./nav-refraction.js?v=worker-glass').then(async ({ attachNavRefraction }) => {
+  const updateMap = await attachNavRefraction(bar);
   if (updateMap) {
     onTransparencyChange(updateMap);
     updateMap();

@@ -105,7 +105,6 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
 
   function paint() {
     frame = undefined;
-    if (bar.hasAttribute('data-glass-fast')) return;
     const active = bar.classList.contains('liquid-glass') &&
       bar.parentElement.classList.contains('is-scrolled');
     if (!active) {

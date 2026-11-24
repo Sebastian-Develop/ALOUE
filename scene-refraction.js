@@ -1,4 +1,4 @@
-import { attachCanvasRefraction } from './campaign-refraction.js?v=fast-scroll';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=worker-glass';
 
 const vertexSource = `
   attribute vec2 position;
@@ -328,14 +328,11 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   function paint() {
     frame = undefined;
     if (fallbackActive) return;
-    if (bar.hasAttribute('data-glass-fast')) {
-      paintedTop = undefined;
-      return;
-    }
     const active = bar.classList.contains('liquid-glass') && bar.parentElement.classList.contains('is-scrolled');
     if (!active) {
       shown = false;
       paintedTop = undefined;
+      bar.removeAttribute('data-refraction');
       return;
     }
     if (!shown || geometryDirty) {
@@ -357,10 +354,7 @@ export function attachSceneRefraction(bar, rimDisplacement) {
     if (layoutDirty) measure();
 
     const top = Math.max(0, window.scrollY) + geometry.top;
-    if (top === paintedTop) {
-      if (performance.now() - lastScroll < 160) schedulePaint();
-      return;
-    }
+    if (top === paintedTop && bar.hasAttribute('data-refraction')) return;
     paintedTop = top;
     const bottom = top + geometry.height / density;
     layerCount = 0;
@@ -392,7 +386,6 @@ export function attachSceneRefraction(bar, rimDisplacement) {
     }
     lens.draw(geometry.width, geometry.height, density, layers, layerCount);
     if (!bar.hasAttribute('data-refraction')) bar.setAttribute('data-refraction', 'canvas');
-    if (performance.now() - lastScroll < 160) schedulePaint();
   }
 
   function schedulePaint() {
