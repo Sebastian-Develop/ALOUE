@@ -1,5 +1,6 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachCanvasRefraction } from './campaign-refraction.js?v=glass-compat';
+import { attachChromeMobileRefraction } from './chrome-mobile-refraction.js?v=smooth-glass';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=smooth-glass';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -49,6 +50,9 @@ export function attachNavRefraction(bar) {
     (/\bChrome\//.test(navigator.userAgent) && !/\bCriOS\//.test(navigator.userAgent));
   const mobile = window.matchMedia('(max-width: 780px)').matches ||
     navigator.userAgentData?.mobile || /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (mobile && (chromium || /\bCriOS\//.test(navigator.userAgent))) {
+    return attachChromeMobileRefraction(bar, rimDisplacement);
+  }
   if (mobile || !chromium || !CSS.supports('backdrop-filter', `url(#${filterId})`)) {
     return attachCanvasRefraction(bar, rimDisplacement);
   }

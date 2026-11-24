@@ -75,21 +75,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   opacity: 0;
   transition: opacity .36s;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"] {
+.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"]) {
+  --lg-opacity: .35;
+  background-image: none;
+  border-color: #ffffff52;
+  box-shadow: var(--lg-shadow), inset 0 1px 1px #fff4, inset 0 -1px 2px #2d231b22;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-refraction="canvas"] .refraction-layer {
-  filter: saturate(1.08);
-  opacity: 1;
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas-chrome"] {
+  --lg-opacity: .43;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"]::before {
+.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"])::before {
   z-index: 1;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-refraction-source="sections"]::before {
-  background:
-    linear-gradient(rgb(var(--lg-tint) / var(--lg-opacity)), rgb(var(--lg-tint) / var(--lg-opacity))),
-    linear-gradient(115deg, #fff4, #fff2 40%, #fff2 65%, #fff4);
+.masthead.is-scrolled .bar.liquid-glass:is([data-refraction="canvas"], [data-refraction="canvas-chrome"]) .refraction-layer {
+  opacity: 1;
+  transition: none;
 }
 .masthead.is-scrolled .bar.liquid-glass::before,
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
@@ -110,6 +112,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
   }
+}
+.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"])::after {
+  padding: 1px;
+  opacity: .55;
 }
 .bar-inner { position: relative; max-width: 1420px; margin-inline: auto; min-height: 62px; padding: 0 clamp(.65rem, 2.75vw, 2.6rem); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; }
 .desktop-nav, .tools { display: flex; align-items: center; gap: clamp(.75rem, 2vw, 1.75rem); }

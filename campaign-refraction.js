@@ -1,266 +1,182 @@
-// Paint a small strip of the shop and warp its pixels with the desktop rim
-// profile. The phone does not need SVG backdrop or element filter support.
+// Mobile lens. Read each shop image once, then sample only the narrow rim
+// during scrolling. The page itself stays visible through the clear center.
 export function attachCanvasRefraction(bar, rimDisplacement) {
-  const sections = [...document.querySelectorAll('main > section, .footer')];
   const canvas = document.createElement('canvas');
   canvas.className = 'refraction-layer';
   canvas.setAttribute('aria-hidden', 'true');
 
   const context = canvas.getContext('2d');
-  const strip = document.createElement('canvas');
-  const stripContext = strip.getContext('2d', { willReadFrequently: true });
-  if (!context || !stripContext) return;
+  const sourceContext = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  if (!context || !sourceContext) return;
 
   bar.prepend(canvas);
   bar.setAttribute('data-renderer', 'canvas');
-  const paper = getComputedStyle(document.body).backgroundColor;
-  const snapshots = new Map();
-  let frame;
-  let output;
-  let samples;
-  let weights;
-  let coverage;
-  let scale;
-  let pending = false;
-  let needsWarmup = true;
 
-  function resizeLens(width, height, density) {
-    canvas.width = strip.width = width;
-    canvas.height = strip.height = height;
+  const images = [...document.querySelectorAll('main img')];
+  const sources = new Map();
+  const density = Math.min(1.5, window.devicePixelRatio || 1);
+  let frame;
+  let scene = [];
+  let layoutChanged = true;
+  let output;
+  let rim;
+  let resizing = false;
+
+  function readImage(image) {
+    if (!image.naturalWidth || sources.has(image)) return;
+    const factor = Math.min(1, 640 / Math.max(image.naturalWidth, image.naturalHeight));
+    const width = Math.max(1, Math.round(image.naturalWidth * factor));
+    const height = Math.max(1, Math.round(image.naturalHeight * factor));
+    sourceContext.canvas.width = width;
+    sourceContext.canvas.height = height;
+    sourceContext.drawImage(image, 0, 0, width, height);
+    try {
+      const data = sourceContext.getImageData(0, 0, width, height).data;
+      sources.set(image, { width, height, pixels: new Uint32Array(data.buffer) });
+    } catch {
+      // A remote image can opt out of pixel access. Its normal page stays visible.
+      return;
+    }
+    invalidateLayout();
+  }
+
+  function measureScene() {
+    const scroll = window.scrollY;
+    scene = [];
+    for (const image of images) {
+      const source = sources.get(image);
+      if (!source || image.closest('[hidden]')) continue;
+      const rect = image.getBoundingClientRect();
+      if (!rect.height || !rect.width) continue;
+      const style = getComputedStyle(image);
+      const cover = style.objectFit === 'cover';
+      const factor = Math.max(rect.width / source.width, rect.height / source.height);
+      const width = cover ? source.width * factor : rect.width;
+      const height = cover ? source.height * factor : rect.height;
+      const [x = '50%', y = '50%'] = style.objectPosition.split(' ');
+      scene.push({
+        source,
+        bounds: { left: rect.left, right: rect.right, top: rect.top + scroll, bottom: rect.bottom + scroll },
+        left: rect.left + (rect.width - width) * parseFloat(x) / 100,
+        top: rect.top + scroll + (rect.height - height) * parseFloat(y) / 100,
+        scaleX: source.width / width,
+        scaleY: source.height / height,
+        hero: image.classList.contains('hero-image'),
+      });
+    }
+    layoutChanged = false;
+  }
+
+  function resizeLens(width, height) {
+    canvas.width = width;
+    canvas.height = height;
     output = context.createImageData(width, height);
-    samples = new Uint32Array(width * height);
-    weights = new Uint8Array(width * height * 2);
-    coverage = new Uint8Array(width * height);
-    scale = density;
+    rim = [];
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        const [dx, dy] = rimDisplacement(x + 0.5, y + 0.5, width, height, scale);
-        const sampleX = Math.min(width - 1.001, Math.max(0, x + dx));
-        const sampleY = Math.min(height - 1.001, Math.max(0, y + dy));
-        const left = Math.floor(sampleX);
-        const top = Math.floor(sampleY);
-        const index = y * width + x;
-        samples[index] = top * width + left;
-        weights[index * 2] = Math.round((sampleX - left) * 255);
-        weights[index * 2 + 1] = Math.round((sampleY - top) * 255);
-        coverage[index] = Math.min(255, Math.round(Math.hypot(dx, dy) * 42 / scale));
+        const [dx, dy] = rimDisplacement(x + 0.5, y + 0.5, width, height, density);
+        const bend = Math.hypot(dx, dy) / density;
+        if (bend < 1) continue;
+        rim.push({
+          index: y * width + x,
+          x: (x + 0.5 + dx) / density,
+          y: (y + 0.5 + dy) / density,
+          alpha: Math.round(206 * Math.min(1, (bend - 1) / 7)),
+        });
       }
-    }
-  }
-
-  function capture(section) {
-    const entry = { attempts: (snapshots.get(section)?.attempts ?? 0) + 1 };
-    snapshots.set(section, entry);
-    pending = true;
-    const bounds = section.getBoundingClientRect();
-    import('./html2canvas.min.js')
-      .then(() => document.fonts?.ready)
-      .then(() => globalThis.html2canvas(section, {
-        backgroundColor: null,
-        scale: Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4000000 / (bounds.width * bounds.height))),
-        scrollX: 0,
-        scrollY: 0,
-        logging: false,
-        onclone(_document, copy) {
-          if (section.classList.contains('hero')) copy.style.minHeight = bounds.height + 'px';
-          // html2canvas paints background-size: cover, but does not paint
-          // object-fit: cover. Translate those images in the render copy.
-          for (const image of copy.querySelectorAll('img')) {
-            const style = image.ownerDocument.defaultView.getComputedStyle(image);
-            if (style.objectFit !== 'cover') continue;
-            const cover = image.ownerDocument.createElement('div');
-            cover.className = image.className;
-            const url = image.currentSrc || image.src;
-            Object.assign(cover.style, {
-              width: style.width,
-              height: style.height,
-              display: 'block',
-              backgroundImage: `url("${encodeURI(url)}")`,
-              backgroundPosition: style.objectPosition,
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-            });
-            image.replaceWith(cover);
-          }
-        },
-      }))
-      .then(bitmap => { entry.bitmap = bitmap; })
-      .catch(() => { entry.failedAt = performance.now(); })
-      .finally(() => {
-        pending = false;
-        schedulePaint();
-      });
-  }
-
-  function drawLiveImages(section, bounds, density) {
-    for (const image of section.querySelectorAll('img')) {
-      if (!image.complete || !image.naturalWidth || image.closest('[hidden]')) continue;
-      const rect = image.getBoundingClientRect();
-      if (rect.top >= bounds.bottom || rect.bottom <= bounds.top || !rect.height) continue;
-
-      const style = getComputedStyle(image);
-      const left = (rect.left - bounds.left) * density;
-      const top = (rect.top - bounds.top) * density;
-      const width = rect.width * density;
-      const height = rect.height * density;
-      stripContext.save();
-      stripContext.beginPath();
-      const radius = parseFloat(getComputedStyle(image.parentElement).borderTopLeftRadius) * density;
-      if (stripContext.roundRect && radius) stripContext.roundRect(left, top, width, height, radius);
-      else stripContext.rect(left, top, width, height);
-      stripContext.clip();
-
-      if (style.objectFit === 'cover') {
-        const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-        const paintedWidth = image.naturalWidth * factor;
-        const paintedHeight = image.naturalHeight * factor;
-        const [x = '50%', y = '50%'] = style.objectPosition.split(' ');
-        stripContext.drawImage(
-          image,
-          left + (width - paintedWidth) * parseFloat(x) / 100,
-          top + (height - paintedHeight) * parseFloat(y) / 100,
-          paintedWidth,
-          paintedHeight
-        );
-      } else {
-        stripContext.drawImage(image, left, top, width, height);
-      }
-      stripContext.restore();
-    }
-  }
-
-  function warpStrip(width, height) {
-    const source = stripContext.getImageData(0, 0, width, height).data;
-    const sourcePixels = new Uint32Array(source.buffer);
-    const destination = new Uint32Array(output.data.buffer);
-    const row = width * 4;
-    for (let pixel = 0; pixel < samples.length; pixel++) {
-      const sample = samples[pixel];
-      const x = weights[pixel * 2] / 255;
-      const y = weights[pixel * 2 + 1] / 255;
-      if (!x && !y) {
-        destination[pixel] = sourcePixels[sample];
-        continue;
-      }
-      const index = sample * 4;
-      const target = pixel * 4;
-      if (!source[index + 3] || !source[index + 7] ||
-          !source[index + row + 3] || !source[index + row + 7]) {
-        destination[pixel] = sourcePixels[sample];
-        continue;
-      }
-      for (let channel = 0; channel < 3; channel++) {
-        const offset = index + channel;
-        const top = source[offset] + (source[offset + 4] - source[offset]) * x;
-        const bottom = source[offset + row] + (source[offset + row + 4] - source[offset + row]) * x;
-        output.data[target + channel] = top + (bottom - top) * y;
-      }
-      output.data[target + 3] = 255;
     }
   }
 
   function paint() {
     frame = undefined;
-    if (!bar.classList.contains('liquid-glass')) return;
-    if (needsWarmup && !pending) {
-      needsWarmup = false;
-      if (!snapshots.has(sections[0])) capture(sections[0]);
-    }
-    if (!bar.parentElement.classList.contains('is-scrolled')) return;
-
-    const bounds = canvas.getBoundingClientRect();
-    const positions = sections.map(section => ({
-      section,
-      bounds: section.getBoundingClientRect(),
-      snapshot: snapshots.get(section),
-    }));
-    const intersecting = positions.filter(({ bounds: section }) =>
-      section.top < bounds.bottom && section.bottom > bounds.top
-    );
-
-    // Prepare the next sections before they cross the glass. A failed
-    // snapshot leaves the directly sampled image path available.
-    const candidates = [...intersecting, ...positions.filter(({ bounds: section }) =>
-      section.top >= bounds.bottom && section.top < bounds.bottom + window.innerHeight * 0.8
-    )];
-    const now = performance.now();
-    const next = candidates.find(({ snapshot }) =>
-      !snapshot || (snapshot.attempts < 2 && now - snapshot.failedAt > 1000)
-    );
-    if (next && !pending) capture(next.section);
-
-    const density = Math.min(window.devicePixelRatio || 1, 2);
-    const width = Math.round(bounds.width * density);
-    const height = Math.round(bounds.height * density);
-    if (width < height || !height) return;
-    if (width !== canvas.width || height !== canvas.height || density !== scale || !output) {
-      resizeLens(width, height, density);
-    }
-
-    stripContext.fillStyle = paper;
-    stripContext.fillRect(0, 0, width, height);
-    // Render the live image strip as soon as each browser decodes the images.
-    // A section snapshot adds text and other layers when it becomes available.
-    const complete = intersecting.every(({ snapshot }) => snapshot?.bitmap);
-    if (!complete) stripContext.clearRect(0, 0, width, height);
-    for (const entry of intersecting) {
-      const { section, bounds: position, snapshot } = entry;
-      if (snapshot?.bitmap) {
-        stripContext.drawImage(
-          snapshot.bitmap,
-          (position.left - bounds.left) * scale,
-          (position.top - bounds.top) * scale,
-          position.width * scale,
-          position.height * scale
-        );
-      } else {
-        drawLiveImages(section, bounds, scale);
-      }
-    }
-
-    try {
-      warpStrip(width, height);
-      if (!complete) {
-        // Keep the true page visible in the unwarped middle while the richer
-        // scene is preparing. Only the rim is painted by the direct sampler.
-        for (let index = 0; index < coverage.length; index++) {
-          const alpha = index * 4 + 3;
-          output.data[alpha] = Math.min(output.data[alpha], coverage[index]);
-        }
-      }
-      context.putImageData(output, 0, 0);
-      bar.setAttribute('data-refraction', 'canvas');
-      bar.setAttribute('data-refraction-source', complete ? 'sections' : 'images');
-    } catch {
+    const active = bar.classList.contains('liquid-glass') &&
+      bar.parentElement.classList.contains('is-scrolled');
+    if (!active) {
       bar.removeAttribute('data-refraction');
+      return;
     }
+    if (layoutChanged) measureScene();
+
+    const lens = canvas.getBoundingClientRect();
+    const width = Math.round(lens.width * density);
+    const height = Math.round(lens.height * density);
+    if (width < height || !height) return;
+
+    const top = lens.top + window.scrollY;
+    const bottom = top + lens.height;
+    const visible = scene.filter(({ bounds }) => bounds.top < bottom && bounds.bottom > top);
+    if (!visible.length) {
+      bar.removeAttribute('data-refraction');
+      return;
+    }
+    if (!output || (!resizing && (width !== canvas.width || height !== canvas.height))) {
+      resizeLens(width, height);
+    }
+    const stretchX = width / canvas.width;
+    const stretchY = height / canvas.height;
+
+    const bytes = output.data;
+    const pixels = new Uint32Array(bytes.buffer);
+    pixels.fill(0);
+    for (const { source, bounds, left, top: imageTop, scaleX, scaleY, hero } of visible) {
+      for (const sample of rim) {
+        const x = lens.left + sample.x * stretchX;
+        const y = top + sample.y * stretchY;
+        if (x < bounds.left || x >= bounds.right || y < bounds.top || y >= bounds.bottom) continue;
+        const sx = Math.min(source.width - 1, Math.max(0, Math.floor((x - left) * scaleX)));
+        const sy = Math.min(source.height - 1, Math.max(0, Math.floor((y - imageTop) * scaleY)));
+        const index = sample.index * 4;
+        pixels[sample.index] = source.pixels[sy * source.width + sx];
+        if (hero) {
+          // Match the campaign's vertical dark scrim inside the sampled area.
+          const progress = (y - bounds.top) / (bounds.bottom - bounds.top);
+          const shade = progress < 0.49
+            ? 0.06 + Math.max(0, progress - 0.20) * 1.08
+            : 0.376 + (progress - 0.49) * 1.03;
+          bytes[index] = bytes[index] * (1 - shade) + 33 * shade;
+          bytes[index + 1] = bytes[index + 1] * (1 - shade) + 26 * shade;
+          bytes[index + 2] = bytes[index + 2] * (1 - shade) + 22 * shade;
+        }
+        bytes[index + 3] = sample.alpha;
+      }
+    }
+
+    context.putImageData(output, 0, 0);
+    if (!bar.hasAttribute('data-refraction')) bar.setAttribute('data-refraction', 'canvas');
   }
 
   function schedulePaint() {
     if (frame === undefined) frame = requestAnimationFrame(paint);
   }
 
-  let viewportWidth = document.documentElement.clientWidth;
-  window.addEventListener('resize', () => {
-    const width = document.documentElement.clientWidth;
-    if (width !== viewportWidth) {
-      viewportWidth = width;
-      snapshots.clear();
-      needsWarmup = true;
-    }
+  function invalidateLayout() {
+    layoutChanged = true;
     schedulePaint();
-  }, { passive: true });
-  const collection = sections.find(section => section.classList.contains('collection'));
-  new MutationObserver(() => {
-    snapshots.delete(collection);
-    schedulePaint();
-  }).observe(collection, { subtree: true, attributeFilter: ['hidden'] });
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(schedulePaint).observe(bar);
-  for (const image of document.querySelectorAll('main img')) {
-    image.addEventListener('load', schedulePaint);
   }
+
+  const main = document.querySelector('main');
+  new MutationObserver(invalidateLayout).observe(main, { subtree: true, attributeFilter: ['hidden'] });
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(invalidateLayout).observe(main);
+  for (const image of images) {
+    image.addEventListener('load', () => {
+      sources.delete(image);
+      readImage(image);
+    });
+    if (image.complete) readImage(image);
+  }
+  bar.addEventListener('transitionrun', event => {
+    if (event.target === bar && event.propertyName === 'width') resizing = true;
+  });
+  for (const type of ['transitionend', 'transitioncancel']) {
+    bar.addEventListener(type, event => {
+      if (event.target !== bar || event.propertyName !== 'width') return;
+      resizing = false;
+      schedulePaint();
+    });
+  }
+  window.addEventListener('resize', invalidateLayout, { passive: true });
   window.addEventListener('scroll', schedulePaint, { passive: true });
-  window.addEventListener('pageshow', schedulePaint);
+  window.addEventListener('pageshow', invalidateLayout);
   schedulePaint();
   return schedulePaint;
 }
