@@ -1,0 +1,97 @@
+---
+layout: null
+shop_data: true
+collections:
+  - handle: menswear
+    title: Menswear
+    menu_label: Alles ansehen
+    description: Die erste ALOUÉ-Kollektion im Überblick.
+  - handle: t-shirts-longsleeves
+    legacy: t-shirts
+    title: T-Shirts & Longsleeves
+    menu_label: T-Shirts & Longsleeves
+    description: T-Shirts und Longsleeves für die ALOUÉ-Garderobe.
+  - handle: hosen-shorts
+    legacy: hosen
+    title: Hosen & Shorts
+    menu_label: Hosen & Shorts
+    description: Hosen und Shorts aus der ALOUÉ-Kollektion.
+  - handle: weite-hosen
+    legacy: weite-hosen
+    title: Weite Hosen
+    menu_label: Weite Hosen
+    description: Hosen mit weiter Silhouette.
+  - handle: wendewesten
+    legacy: wendewesten
+    title: Wendewesten
+    menu_label: Wendewesten
+    description: Wendewesten für vielseitige Kombinationen.
+  - handle: cardigan-zip
+    legacy: cardigans
+    title: Cardigans mit Reißverschluss
+    menu_label: Cardigans mit Reißverschluss
+    description: Strickjacken mit durchgehendem Reißverschluss.
+  - handle: strick-wolle
+    legacy: strick
+    title: Strick & Wolle
+    menu_label: Strick & Wolle
+    description: Strickstücke aus der ersten ALOUÉ-Kollektion.
+  - handle: field-jackets
+    legacy: field-jackets
+    title: Field Jackets
+    menu_label: Field Jackets
+    description: Field Jackets für die ALOUÉ-Garderobe.
+  - handle: wendejacken
+    legacy: wendejacken
+    title: Wendejacken
+    menu_label: Wendejacken
+    description: Jacken mit zwei tragbaren Seiten.
+  - handle: kapuzenjacken
+    legacy: kapuzenjacken
+    title: Kapuzenjacken
+    menu_label: Kapuzenjacken
+    description: Jacken mit Kapuze aus der ALOUÉ-Garderobe.
+  - handle: sommer-sets
+    legacy: sommer-sets
+    title: Sommer-Sets
+    menu_label: Sommer-Sets
+    description: Aufeinander abgestimmte Stücke für den Sommer.
+  - handle: jacken
+    legacy: jacken
+    title: Jacken
+    description: Jacken und Overshirts aus der ALOUÉ-Kollektion.
+products:
+  - id: overshirt
+    collection: jacken
+    name: Overshirt
+    price: 11900
+    tone: Anthrazit
+    swatch: '#383635'
+    image: overshirt.jpg
+    alt: Overshirt in Anthrazit
+  - id: pulli
+    collection: strick-wolle
+    name: Feinstrick-Pullover
+    price: 8900
+    tone: Ecru
+    swatch: '#dcd1b9'
+    image: knit.jpg
+    alt: Feinstrick-Pullover in Ecru
+  - id: hose
+    collection: hosen-shorts
+    name: Bundfaltenhose
+    price: 10900
+    tone: Taupe
+    swatch: '#74675a'
+    image: trousers.jpg
+    alt: Bundfaltenhose in Taupe
+  - id: polo
+    collection: strick-wolle
+    name: Strickpolo
+    price: 7900
+    tone: Schwarz
+    swatch: '#21201d'
+    image: polo.jpg
+    alt: Strickpolo in Schwarz
+---
+{{ page.products | jsonify }}

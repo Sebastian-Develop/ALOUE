@@ -1,0 +1,8 @@
+  {% for category in shop.collections %}
+    {% if category.menu_label %}
+      {% assign route = category.handle | prepend: '/collections/' | append: '/' %}
+      <li{% if category.handle == 'menswear' %} class="menswear-all"{% endif %}>
+        <a href="{{ route | relative_url }}" data-collection-link{% if category.legacy %} data-legacy-category="{{ category.legacy }}"{% endif %}{% if page.collection_handle == category.handle %} aria-current="page"{% endif %}>{{ category.menu_label | escape }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}

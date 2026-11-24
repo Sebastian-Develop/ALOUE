@@ -1,0 +1,13 @@
+      <div class="product-grid">
+        {% for product in products %}
+        <article class="product" data-id="{{ product.id | escape }}">
+          <button class="product-image" type="button" data-product aria-label="{{ product.name | escape }} ansehen">
+            <img src="{{ product.image | relative_url }}" width="768" height="512" alt="{{ product.alt | escape }}" loading="lazy">
+            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
+          </button>
+          {% assign cents = product.price | modulo: 100 | prepend: '0' | slice: -2, 2 %}
+          <div class="product-info"><h3>{{ product.name | escape }}</h3><span>{{ product.price | divided_by: 100 }},{{ cents }} €</span></div>
+          <p class="product-tone"><span style="--tone:{{ product.swatch }}"></span>{{ product.tone | escape }}</p>
+        </article>
+        {% endfor %}
+      </div>

@@ -1,0 +1,35 @@
+{% assign shop = site.pages | where: 'shop_data', true | first %}
+{% assign collection = shop.collections | where: 'handle', page.collection_handle | first %}
+{% assign products = shop.products %}
+{% unless collection.handle == 'menswear' %}
+  {% assign products = products | where: 'collection', collection.handle %}
+{% endunless %}
+{% assign shop_title = collection.title | append: ' | ALOUÉ' %}
+{% assign shop_description = collection.description %}
+{% include_relative _shop-head.html %}
+{% include_relative _shop-header.html %}
+  <main id="hauptinhalt" class="category-main" tabindex="-1">
+    <section class="collection category-page container" aria-labelledby="collection-title">
+      <nav class="collection-breadcrumb" aria-label="Brotkrümelnavigation">
+        <a href="{{ '/' | relative_url }}">Startseite</a>
+        <span aria-hidden="true">/</span>
+        {% if collection.handle == 'menswear' %}
+        <span aria-current="page">Menswear</span>
+        {% else %}
+        <a href="{{ '/collections/menswear/' | relative_url }}">Menswear</a>
+        {% endif %}
+      </nav>
+      <h1 id="collection-title">{{ collection.title | escape }}</h1>
+      {% if products.size > 0 %}
+      <p class="collection-count">{{ products.size }} {% if products.size == 1 %}Stück{% else %}Stücke{% endif %}</p>
+      {% include_relative _shop-products.html %}
+      <p class="collection-note">Bilder, Produkte und Preise sind Beispiele für die Shop-Vorschau.</p>
+      {% else %}
+      <div class="collection-empty">
+        <p>In dieser Kategorie sind noch keine Stücke in der Vorschau.</p>
+        <a class="action outline" href="{{ '/collections/menswear/' | relative_url }}">Alle Stücke ansehen</a>
+      </div>
+      {% endif %}
+    </section>
+  </main>
+{% include_relative _shop-end.html %}

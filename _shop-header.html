@@ -1,0 +1,46 @@
+<body id="start"{% unless page.collection_handle %} data-shop-home{% endunless %}>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="search-icon" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="bag-icon" viewBox="0 0 24 24"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="plus-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></symbol>
+    <symbol id="chevron-icon" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#hauptinhalt">Zum Inhalt</a>
+  <div class="notice">Shop-Vorschau · Kollektion 01</div>
+
+  <header class="masthead">
+    <div class="bar liquid-glass--subtle">
+      <div class="bar-inner liquid-glass__content">
+        <nav class="desktop-nav" aria-label="Hauptnavigation">
+          <button class="menswear-trigger" type="button" aria-expanded="false" aria-controls="menswear-menu">
+            Menswear <svg aria-hidden="true"><use href="#chevron-icon"/></svg>
+          </button>
+          <a href="{{ '/' | relative_url }}#filme">Filme</a>
+          <a href="{{ '/' | relative_url }}#editorial">Editorial</a>
+        </nav>
+        <button class="icon-button menu-trigger" type="button" data-open="menu" aria-label="Menü öffnen">
+          <svg><use href="#menu-icon"/></svg>
+        </button>
+        <a class="brand" href="{{ '/' | relative_url }}" aria-label="ALOUÉ Startseite">
+          <img src="{{ '/wordmark.png' | relative_url }}" width="640" height="166" alt="ALOUÉ">
+        </a>
+        <div class="tools">
+          <button class="icon-button" type="button" data-open="search" aria-label="Suche öffnen">
+            <svg><use href="#search-icon"/></svg>
+          </button>
+          <button class="icon-button bag-trigger" type="button" data-open="bag" aria-label="Tasche öffnen, 0 Artikel">
+            <svg><use href="#bag-icon"/></svg><span data-bag-count aria-hidden="true">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="menswear-menu" id="menswear-menu" aria-label="Menswear-Kategorien" hidden>
+      <ul class="menswear-links">
+{% include_relative _shop-collection-links.html %}
+      </ul>
+    </nav>
+  </header>
+

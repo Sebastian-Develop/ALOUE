@@ -20,7 +20,7 @@ const updateGlass = () => {
 onTransparencyChange(updateGlass);
 updateGlass();
 
-import('./nav-refraction.js?v=worker-glass').then(async ({ attachNavRefraction }) => {
+import('./nav-refraction.js?v=collections').then(async ({ attachNavRefraction }) => {
   const updateMap = await attachNavRefraction(bar);
   if (updateMap) {
     onTransparencyChange(updateMap);
@@ -30,17 +30,11 @@ import('./nav-refraction.js?v=worker-glass').then(async ({ attachNavRefraction }
   // Keep the CSS glass surface if the optics module cannot load.
 });
 
-const cards = [...document.querySelectorAll('.product')];
-const products = new Map(cards.map(card => {
-  const image = card.querySelector('img');
-  return [card.dataset.id, {
-    name: card.querySelector('h3').textContent,
-    tone: card.querySelector('.product-tone').textContent.trim(),
-    price: Number(card.dataset.price),
-    image: image.getAttribute('src'),
-    alt: image.alt,
-  }];
-}));
+const catalog = JSON.parse(document.querySelector('#shop-catalog').textContent);
+const products = new Map(catalog.map(product => [product.id, {
+  ...product,
+  image: new URL(product.image, import.meta.url).href,
+}]));
 const money = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
 const euros = cents => money.format(cents / 100);
 const search = document.querySelector('#search');
@@ -58,7 +52,7 @@ const sizes = new Set(['S', 'M', 'L', 'XL']);
 let activeProduct;
 let returnFocus;
 
-function loadBag() {
+function loadBag(fallback = []) {
   try {
     const items = JSON.parse(localStorage.getItem(bagKey));
     return Array.isArray(items) ? items.filter(item =>
@@ -66,10 +60,19 @@ function loadBag() {
       Number.isSafeInteger(item.quantity) && item.quantity > 0 && item.quantity <= 99
     ) : [];
   } catch {
-    return [];
+    return fallback;
   }
 }
 let items = loadBag();
+
+function syncBag() {
+  items = loadBag(items);
+  renderBag();
+}
+window.addEventListener('pageshow', syncBag);
+window.addEventListener('storage', event => {
+  if (event.key === bagKey || event.key === null) syncBag();
+});
 
 function saveBag() {
   try {
@@ -219,61 +222,23 @@ window.addEventListener('resize', () => {
   if (!menswearMenu.hidden && menswearTrigger.getClientRects().length === 0) setMenswearOpen(false);
 }, { passive: true });
 
-const collection = document.querySelector('#kollektion');
-const collectionTitle = collection.querySelector('#collection-title');
-const collectionEmpty = collection.querySelector('.collection-empty');
-const collectionStatus = collection.querySelector('[data-collection-status]');
-const filters = [...collection.querySelectorAll('[data-filter]')];
-const menswearLinks = [...document.querySelectorAll('[data-menswear]')];
-const categories = new Map(filters.map(button => [button.dataset.filter, button.textContent.trim()]));
-for (const link of menswearMenu.querySelectorAll('[data-menswear]')) {
-  categories.set(link.dataset.menswear, link.textContent.trim());
-}
-categories.set('all', collectionTitle.textContent);
-const categoryPrefix = '#menswear-';
-
-function showCategory(category) {
-  collectionTitle.textContent = categories.get(category);
-  for (const button of filters) button.setAttribute('aria-pressed', button.dataset.filter === category);
-  for (const link of menswearLinks) {
-    if (link.dataset.menswear === category) link.setAttribute('aria-current', 'true');
-    else link.removeAttribute('aria-current');
-  }
-  let visibleCount = 0;
-  for (const card of cards) {
-    card.hidden = category !== 'all' && card.dataset.category !== category;
-    if (!card.hidden) visibleCount += 1;
-  }
-  collectionEmpty.hidden = visibleCount !== 0;
-  collectionStatus.textContent = visibleCount === 1 ? '1 Stück' : `${visibleCount} Stücke`;
-}
-
-function syncCollectionLocation() {
-  const hash = window.location.hash;
-  const category = hash.startsWith(categoryPrefix) ? hash.slice(categoryPrefix.length) : 'all';
-  showCategory(categories.has(category) ? category : 'all');
-  if (hash.startsWith(categoryPrefix) && categories.has(category)) collection.scrollIntoView({ block: 'start' });
-}
-
-for (const button of filters) {
-  button.addEventListener('click', () => {
-    const category = button.dataset.filter;
-    const hash = category === 'all' ? '#kollektion' : categoryPrefix + category;
-    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
-    showCategory(category);
-  });
-}
 document.addEventListener('click', event => {
-  const link = event.target.closest('a[href^="#menswear-"], a[href="#kollektion"]');
+  const link = event.target.closest('[data-collection-link]');
   if (!link || event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  link.closest('dialog')?.close();
   if (menswearMenu.contains(link)) setMenswearOpen(false);
-  if (link.hash === window.location.hash && link.hash.startsWith(categoryPrefix)) {
-    event.preventDefault();
-    syncCollectionLocation();
-  }
 });
-window.addEventListener('hashchange', syncCollectionLocation);
-syncCollectionLocation();
+
+if (document.body.hasAttribute('data-shop-home')) {
+  const legacyCategoryLinks = new Map([...document.querySelectorAll('[data-legacy-category]')]
+    .map(link => ['#menswear-' + link.dataset.legacyCategory, link.href]));
+  const followLegacyCategory = () => {
+    const location = legacyCategoryLinks.get(window.location.hash);
+    if (location) window.location.replace(location);
+  };
+  window.addEventListener('hashchange', followLegacyCategory);
+  followLegacyCategory();
+}
 
 productForm.addEventListener('submit', event => {
   event.preventDefault();

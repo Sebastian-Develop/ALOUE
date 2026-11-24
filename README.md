@@ -2,12 +2,14 @@
 
 Statische Shop-Vorschau für GitHub Pages. Die Produktdaten und Preise sind Beispiele. Die Demo-Tasche speichert Größen und Mengen im Browser.
 
+GitHub Pages baut die Kategorieseiten mit Jekyll. Der Vorschaukatalog und die Kategorien stehen in `shop-data.json`. Die Sammlungsvorlage `_shop-collection.html` wird von den Seiten `collection-*.html` unter `/collections/<handle>/` eingebunden. Für die lokale Vorschau `jekyll serve --baseurl /ALOUE` verwenden.
+
 ## Übernahme in ein Shopify-Theme
 
 - Header, Kampagne, Kollektion, Kampagnenfilme, Editorial und Menswear sind eigenständige HTML-Bereiche und können als Liquid-Sections in ein Theme übernommen werden.
 - CSS, Bilddateien und die Liquid-Glass-Module können als Theme-Assets geladen werden. Dateinamen und relative Modulverweise im Theme übernehmen oder über die Shopify-Asset-URLs auflösen.
 - Platzhalterprodukte durch Shopify-Kollektionen, Produktobjekte und Varianten ersetzen und Suche sowie Warenkorb mit den Funktionen des Ziel-Themes verbinden.
-- Die Menswear-Links im Theme auf die jeweiligen Shopify-Kollektionen setzen. Die Vorschau nutzt lokale Kategorien und zeigt einen Hinweis bei noch leeren Kategorien.
+- Die Menswear-Links im Theme auf die jeweiligen Shopify-Kollektionen setzen. Die Vorschau nutzt eigene Seiten unter `/collections/` und zeigt einen Hinweis bei noch leeren Kategorien.
 - Für einen Film einen `src` oder ein `<source src="…">` und das passende `poster` am jeweiligen Video ergänzen. In Shopify kann die Section dafür ein Video-Setting und den Liquid-Filter `video_tag` verwenden. Die Vorschau zeigt bei freien Plätzen ein Standbild.
 - Für die Navigation `.masthead`, `.bar`, die Regeln für `.is-scrolled` und die Scroll-Logik aus `store.js` übernehmen. Chromium nutzt die SVG-Verschiebungskarte auf dem Live-Hintergrund. Browser ohne SVG-Backdrop, darunter Safari und Chrome auf dem iPhone, verwenden Glass SDK 0.0.3-beta.4 mit einem WebGL-Worker und einer auf ALOUÉ abgestimmten Kantenbrechung. Die Module `scene-refraction.js` und `campaign-refraction.js` übernehmen die Brechung auf älteren Geräten. Die Einstellung für reduzierte Transparenz gilt für alle Varianten.
 

@@ -176,7 +176,7 @@ function paintText(context, section, root) {
 }
 
 function paintControls(context, section, root) {
-  for (const element of section.querySelectorAll('.filters, .filters button, .action, .hero-editorial')) {
+  for (const element of section.querySelectorAll('.filters, .filters a, .action, .hero-editorial')) {
     const box = element.getBoundingClientRect();
     if (!box.width || !box.height) continue;
     const style = getComputedStyle(element);
@@ -337,7 +337,7 @@ export function attachSceneRefraction(bar, rimDisplacement) {
     }
     if (!shown || geometryDirty) {
       const header = bar.parentElement.getBoundingClientRect();
-      const gutter = parseFloat(getComputedStyle(document.querySelector('.hero')).marginLeft);
+      const gutter = parseFloat(getComputedStyle(sections[0]).marginLeft);
       const width = Math.min(header.width - gutter * 2, 1240);
       const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
       geometry = {

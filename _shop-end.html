@@ -1,0 +1,51 @@
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="brand" href="{{ '/' | relative_url }}" aria-label="ALOUÉ Startseite"><img src="{{ '/wordmark.png' | relative_url }}" width="640" height="166" alt="ALOUÉ"></a>
+      <nav aria-label="Fußnavigation"><a href="{{ '/collections/menswear/' | relative_url }}">Menswear</a><a href="{{ '/' | relative_url }}#filme">Filme</a><a href="{{ '/' | relative_url }}#editorial">Editorial</a></nav>
+      <p>ALOUÉ · Shop-Vorschau</p>
+    </div>
+  </footer>
+
+  <dialog id="menu" aria-labelledby="menu-title">
+    <div class="dialog-heading"><h2 id="menu-title">Menü</h2><button type="button" class="icon-button glass" data-close aria-label="Menü schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <nav class="menu-links" aria-label="Mobile Navigation">
+      <details>
+        <summary>Menswear <svg aria-hidden="true"><use href="#chevron-icon"/></svg></summary>
+        <ul class="menswear-links">
+{% include_relative _shop-collection-links.html %}
+        </ul>
+      </details>
+      <a href="{{ '/' | relative_url }}#editorial" data-close>Editorial</a>
+      <a href="{{ '/' | relative_url }}#filme" data-close>Filme</a>
+    </nav>
+  </dialog>
+
+  <dialog id="search" aria-labelledby="search-title">
+    <div class="dialog-heading"><h2 id="search-title">Suche</h2><button type="button" class="icon-button glass" data-close aria-label="Suche schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <label class="visually-hidden" for="search-field">Produkte suchen</label>
+    <input id="search-field" type="search" placeholder="Produkt oder Farbe suchen" autocomplete="off" autofocus>
+    <div id="search-results" class="search-results" aria-live="polite"></div>
+  </dialog>
+
+  <dialog id="product" aria-labelledby="product-title">
+    <div class="dialog-heading"><h2 id="product-title"></h2><button type="button" class="icon-button glass" data-close aria-label="Produkt schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <img class="detail-image" alt="">
+    <p class="detail-summary"></p>
+    <form id="product-form">
+      <label for="size">Größe</label>
+      <select id="size" required>
+        <option value="">Größe wählen</option>
+        <option>S</option><option>M</option><option>L</option><option>XL</option>
+      </select>
+      <button class="action dark" type="submit">In die Tasche legen</button>
+    </form>
+  </dialog>
+
+  <dialog id="bag" aria-labelledby="bag-title">
+    <div class="dialog-heading"><h2 id="bag-title">Deine Tasche</h2><button type="button" class="icon-button glass" data-close aria-label="Tasche schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <div id="bag-items" aria-live="polite"></div>
+    <div class="bag-footer" hidden><div><span>Zwischensumme</span><strong data-subtotal></strong></div><p>Diese Vorschau nimmt keine Bestellungen an.</p></div>
+  </dialog>
+  <script id="shop-catalog" type="application/json">{{ shop.products | jsonify | replace: '<', '\u003c' }}</script>
+</body>
+</html>
