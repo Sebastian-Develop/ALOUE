@@ -1,5 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachSceneRefraction } from './scene-refraction.js?v=fluid-glass';
+import { attachSceneRefraction } from './scene-refraction.js?v=fast-scroll';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -43,6 +43,37 @@ function drawDisplacementMap(context, width, height) {
   context.putImageData(image, 0, 0);
 }
 
+function guardFastScroll(bar, repaint) {
+  if (!repaint) return;
+  let position = window.scrollY;
+  let time = performance.now();
+  let settle;
+
+  // Fast kinetic scrolling can outrun the browser's JavaScript scroll events.
+  // Let the browser composite the real page through the glass during that phase.
+  window.addEventListener('scroll', () => {
+    const next = window.scrollY;
+    const now = performance.now();
+    const distance = Math.abs(next - position);
+    const speed = distance / Math.max(8, Math.min(now - time, 34));
+    position = next;
+    time = now;
+    const fast = bar.hasAttribute('data-glass-fast');
+    if (!fast && (distance >= 28 || speed >= 1.1)) {
+      bar.setAttribute('data-glass-fast', '');
+    } else if (!fast || (distance < 15 && speed < 0.55)) {
+      return;
+    }
+
+    window.clearTimeout(settle);
+    settle = window.setTimeout(() => {
+      // Paint against the latest scroll position before fading in the lens.
+      bar.removeAttribute('data-glass-fast');
+      repaint();
+    }, 150);
+  }, { passive: true });
+}
+
 export function attachNavRefraction(bar) {
   // SVG filters on a live CSS backdrop are supported in Chromium.
   const chromium = navigator.userAgentData?.brands.some(({ brand }) => brand === 'Chromium') ??
@@ -50,7 +81,9 @@ export function attachNavRefraction(bar) {
   const mobile = window.matchMedia('(max-width: 780px)').matches ||
     navigator.userAgentData?.mobile || /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
   if (mobile || !chromium || !CSS.supports('backdrop-filter', `url(#${filterId})`)) {
-    return attachSceneRefraction(bar, rimDisplacement);
+    const repaint = attachSceneRefraction(bar, rimDisplacement);
+    guardFastScroll(bar, repaint);
+    return repaint;
   }
 
   const canvas = document.createElement('canvas');

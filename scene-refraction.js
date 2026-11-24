@@ -1,4 +1,4 @@
-import { attachCanvasRefraction } from './campaign-refraction.js?v=fluid-glass';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=fast-scroll';
 
 const vertexSource = `
   attribute vec2 position;
@@ -328,6 +328,10 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   function paint() {
     frame = undefined;
     if (fallbackActive) return;
+    if (bar.hasAttribute('data-glass-fast')) {
+      paintedTop = undefined;
+      return;
+    }
     const active = bar.classList.contains('liquid-glass') && bar.parentElement.classList.contains('is-scrolled');
     if (!active) {
       shown = false;

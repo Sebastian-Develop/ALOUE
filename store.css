@@ -88,7 +88,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .masthead.is-scrolled .bar.liquid-glass[data-refraction="canvas"] .refraction-layer {
   opacity: 1;
-  transition: none;
+  transition: opacity .14s ease-out;
+}
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="canvas"][data-glass-fast] .refraction-layer {
+  opacity: 0;
+  transition-duration: .04s;
 }
 .masthead.is-scrolled .bar.liquid-glass::before,
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
