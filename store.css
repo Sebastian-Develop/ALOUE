@@ -4,13 +4,13 @@
   --ink: #211f1c;
   --muted: #655e55;
   --line: #d9d2c7;
-  --display: "Instrument Serif", Georgia, serif;
+  --display: "Cormorant Garamond", Georgia, serif;
   --text: "Instrument Sans", system-ui, sans-serif;
   --gutter: clamp(1rem, 3.1vw, 3.5rem);
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.45 var(--text); }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.58 var(--text); }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; color: inherit; }
@@ -26,9 +26,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .masthead { position: sticky; top: 0; z-index: 3; height: 64px; }
 .masthead .bar {
   --lg-radius: 999px;
-  --lg-blur: 17px;
-  --lg-saturate: 118%;
-  --lg-opacity: .65;
+  --lg-blur: 5px;
+  --lg-saturate: 108%;
+  --lg-opacity: .49;
   --lg-tint: 247 243 234;
   --lg-border-opacity: .64;
   --lg-edge-red: #ffc99538;
@@ -60,7 +60,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .masthead.is-scrolled .bar.liquid-glass {
   background-color: transparent;
-  background-image: linear-gradient(120deg, #fff4, transparent 45%, #fff2);
+  background-image: linear-gradient(120deg, #fff5, #fff1 45%, #fff3);
   -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
   backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
 }
@@ -74,7 +74,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
 .bar-inner { position: relative; max-width: 1420px; margin-inline: auto; min-height: 62px; padding: 0 clamp(.65rem, 2.75vw, 2.6rem); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; }
 .desktop-nav, .tools { display: flex; align-items: center; gap: clamp(.75rem, 2vw, 1.75rem); }
-.desktop-nav { font-size: .875rem; font-weight: 600; }
+.desktop-nav { font-size: .9rem; font-weight: 600; letter-spacing: .025em; }
 .desktop-nav a, .footer a { text-underline-offset: .25em; }
 .desktop-nav a:hover, .footer a:hover { text-decoration: underline; }
 .tools { justify-self: end; gap: .1rem; }
@@ -91,11 +91,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
   .masthead.is-scrolled .bar:not(.liquid-glass) {
-    background: #f7f3eac4;
-    -webkit-backdrop-filter: blur(17px) saturate(1.18);
-    backdrop-filter: blur(17px) saturate(1.18);
+    background: #f7f3eaa6;
+    -webkit-backdrop-filter: blur(5px) saturate(1.08);
+    backdrop-filter: blur(5px) saturate(1.08);
   }
-  .glass { background: #f4eadaca; -webkit-backdrop-filter: blur(10px) saturate(1.35); backdrop-filter: blur(10px) saturate(1.35); }
+  .glass { background: #f4eadaca; -webkit-backdrop-filter: blur(4px) saturate(1.12); backdrop-filter: blur(4px) saturate(1.12); }
 }
 .glass-light { color: #fffaf1; background: #26211be8; border-color: #fff7; }
 @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
@@ -114,8 +114,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .hero-content { z-index: 1; max-width: 44rem; padding: 7rem clamp(1.5rem, 7vw, 8rem) 5rem; }
 .eyebrow { margin: 0; font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
 h1, h2, h3, p { margin-top: 0; }
-h1, h2 { font-family: var(--display); font-weight: 400; }
-h1 { margin: 1.1rem 0 1.4rem; font-size: clamp(5.2rem, 10vw, 10.2rem); line-height: .77; letter-spacing: -.035em; }
+h1, h2 { font-family: var(--display); font-weight: 500; }
+h1 { margin: 1rem 0 1.55rem; font-size: clamp(4.5rem, 8.7vw, 9.15rem); line-height: .94; letter-spacing: .012em; }
 h1 em { color: #e5d6bf; }
 .hero-description { margin: 0 0 1.6rem; color: #f9f3e9; font-size: 1.06rem; }
 .action, .hero-editorial { display: inline-flex; align-items: center; justify-content: center; border-radius: 99px; font-size: .9rem; font-weight: 600; }
@@ -126,7 +126,7 @@ h1 em { color: #e5d6bf; }
 .collection, .editorial { scroll-margin-top: 105px; }
 .collection { padding-block: clamp(3.6rem, 6.4vw, 6.75rem); }
 .collection-header { display: flex; justify-content: space-between; align-items: end; gap: 1.4rem; margin-bottom: 1.6rem; }
-.collection h2, .editorial h2 { margin: .4rem 0 0; font-size: clamp(3.3rem, 6vw, 6rem); line-height: .93; letter-spacing: -.025em; }
+.collection h2, .editorial h2 { margin: .4rem 0 0; font-size: clamp(3.15rem, 5.45vw, 5.6rem); line-height: 1.06; letter-spacing: .008em; }
 .collection .eyebrow { color: var(--muted); }
 .filters { display: flex; flex-wrap: wrap; gap: .25rem; padding: .25rem; border: 1px solid var(--line); border-radius: 999px; }
 .filters button { border: 0; border-radius: 999px; background: transparent; min-height: 40px; padding: .45rem 1.05rem; font-size: .88rem; font-weight: 600; }
@@ -138,7 +138,7 @@ h1 em { color: #e5d6bf; }
 .product-image:hover img, .product-image:focus-visible img { transform: scale(1.045); }
 .product-plus { position: absolute; right: .7rem; bottom: .7rem; border-radius: 50%; width: 43px; height: 43px; display: grid; place-items: center; }
 .product-info { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .1rem .6rem; margin-top: .8rem; }
-.product-info h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+.product-info h3 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: .014em; }
 .product-info > span { white-space: nowrap; color: var(--muted); font-size: .88rem; }
 .product-tone { display: flex; align-items: center; gap: .45rem; margin: .25rem 0 0; color: var(--muted); font-size: .875rem; }
 .product-tone span { width: .7rem; height: .7rem; border-radius: 50%; background: var(--tone); border: 1px solid #211f1c24; }
@@ -187,6 +187,7 @@ dialog input, dialog select { width: 100%; min-height: 44px; padding: .6rem .85r
   .hero-image { object-position: 62% center; }
   .hero::before { background: linear-gradient(0deg, #211a16e6, #211a1660 51%, #211a1610 80%); }
   .hero-content { padding: 7rem 1.5rem 3.8rem; }
+  h1 { font-size: clamp(3.8rem, 12.8vw, 6.2rem); }
   .hero-editorial { display: none; }
   .collection-header { align-items: start; flex-direction: column; gap: 1.15rem; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.5rem; }
