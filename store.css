@@ -65,6 +65,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   /* The lens shifts live pixels. Keep the center sharp. */
   backdrop-filter: var(--lg-filter) saturate(1.08);
 }
+.campaign-refraction {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.masthead.is-scrolled .bar.liquid-glass[data-campaign-refraction] {
+  --lg-blur: 1px;
+}
 .masthead.is-scrolled .bar.liquid-glass::before,
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
 .masthead .bar.liquid-glass::after {

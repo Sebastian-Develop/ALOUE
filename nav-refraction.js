@@ -1,4 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
+import { attachCampaignRefraction } from './campaign-refraction.js';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -48,7 +49,8 @@ export function attachNavRefraction(bar) {
   // SVG filters on a live CSS backdrop are supported in Chromium.
   const chromium = navigator.userAgentData?.brands.some(({ brand }) => brand === 'Chromium') ??
     (/\bChrome\//.test(navigator.userAgent) && !/\bCriOS\//.test(navigator.userAgent));
-  if (!chromium || !CSS.supports('backdrop-filter', `url(#${filterId})`)) return;
+  const nativeBackdrop = chromium && CSS.supports('backdrop-filter', `url(#${filterId})`);
+  if (!nativeBackdrop) return attachCampaignRefraction(bar);
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
