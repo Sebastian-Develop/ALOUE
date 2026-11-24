@@ -1,12 +1,169 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALOUÉ</title>
-<style>body{margin:0;background:#eeeadf;color:#171614;font:16px system-ui,sans-serif}main{min-height:100svh;display:grid;place-content:center;justify-items:center;text-align:center;padding:0 1rem}img{display:block;width:min(100%,640px);height:auto}p{margin:1.5rem 0}</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2eb">
+  <meta name="description" content="ALOUÉ. Vorschau auf die erste Kollektion und den zukünftigen Onlineshop.">
+  <title>ALOUÉ | Kollektion 01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="liquid-glass.css">
+  <link rel="stylesheet" href="store.css">
+  <script type="module" src="store.js"></script>
 </head>
-<body>
-<main><img src="aloue-logo.jpg" alt="ALOUÉ" width="1100" height="698"><p>Der Onlineshop ist in Vorbereitung.</p></main>
+<body id="start">
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="search-icon" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="bag-icon" viewBox="0 0 24 24"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="plus-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#kollektion">Zur Kollektion</a>
+  <div class="notice">Shop-Vorschau · Kollektion 01</div>
+
+  <header class="masthead">
+    <div class="bar liquid-glass--subtle">
+      <span class="liquid-glass__refraction bar-refraction" aria-hidden="true"></span>
+      <div class="bar-inner liquid-glass__content">
+        <nav class="desktop-nav" aria-label="Hauptnavigation">
+          <a href="#kollektion">Shop</a>
+          <a href="#editorial">Editorial</a>
+        </nav>
+        <button class="icon-button menu-trigger" type="button" data-open="menu" aria-label="Menü öffnen">
+          <svg><use href="#menu-icon"/></svg>
+        </button>
+        <a class="brand" href="#start" aria-label="ALOUÉ Startseite">
+          <img src="wordmark.png" width="640" height="166" alt="ALOUÉ">
+        </a>
+        <div class="tools">
+          <button class="icon-button" type="button" data-open="search" aria-label="Suche öffnen">
+            <svg><use href="#search-icon"/></svg>
+          </button>
+          <button class="icon-button bag-trigger" type="button" data-open="bag" aria-label="Tasche öffnen, 0 Artikel">
+            <svg><use href="#bag-icon"/></svg><span data-bag-count aria-hidden="true">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-image" src="campaign.jpg" alt="Zwei Models in dunkler und steinfarbener Kleidung vor einer Betonfassade" fetchpriority="high">
+      <div class="hero-content">
+        <p class="eyebrow">ALOUÉ / Kollektion 01</p>
+        <h1 id="hero-title">Form in<br><em>Ruhe.</em></h1>
+        <p class="hero-description">Klare Schnitte. Warme Töne.<br>Eine Garderobe für jeden Tag.</p>
+        <a class="action glass glass-light" href="#kollektion">Kollektion entdecken</a>
+      </div>
+      <a href="#editorial" class="hero-editorial glass glass-light">Zum Editorial</a>
+    </section>
+
+    <section class="collection container" id="kollektion" aria-labelledby="collection-title">
+      <div class="collection-header">
+        <div>
+          <p class="eyebrow">Die erste Kollektion</p>
+          <h2 id="collection-title">Ausgewählte Stücke</h2>
+        </div>
+        <div class="filters" role="group" aria-label="Kollektion filtern">
+          <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+          <button type="button" data-filter="jacken" aria-pressed="false">Jacken</button>
+          <button type="button" data-filter="strick" aria-pressed="false">Strick</button>
+          <button type="button" data-filter="hosen" aria-pressed="false">Hosen</button>
+        </div>
+      </div>
+      <div class="product-grid">
+        <article class="product" data-id="overshirt" data-category="jacken" data-price="11900">
+          <button class="product-image" type="button" data-product aria-label="Overshirt ansehen">
+            <img src="overshirt.jpg" width="768" height="512" alt="Overshirt in Anthrazit" loading="lazy">
+            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
+          </button>
+          <div class="product-info"><h3>Overshirt</h3><span data-price-label>119,00 €</span></div>
+          <p class="product-tone"><span style="--tone:#383635"></span>Anthrazit</p>
+        </article>
+        <article class="product" data-id="pulli" data-category="strick" data-price="8900">
+          <button class="product-image" type="button" data-product aria-label="Feinstrick-Pullover ansehen">
+            <img src="knit.jpg" width="768" height="512" alt="Feinstrick-Pullover in Ecru" loading="lazy">
+            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
+          </button>
+          <div class="product-info"><h3>Feinstrick-Pullover</h3><span data-price-label>89,00 €</span></div>
+          <p class="product-tone"><span style="--tone:#dcd1b9"></span>Ecru</p>
+        </article>
+        <article class="product" data-id="hose" data-category="hosen" data-price="10900">
+          <button class="product-image" type="button" data-product aria-label="Bundfaltenhose ansehen">
+            <img src="trousers.jpg" width="768" height="512" alt="Bundfaltenhose in Taupe" loading="lazy">
+            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
+          </button>
+          <div class="product-info"><h3>Bundfaltenhose</h3><span data-price-label>109,00 €</span></div>
+          <p class="product-tone"><span style="--tone:#74675a"></span>Taupe</p>
+        </article>
+        <article class="product" data-id="polo" data-category="strick" data-price="7900">
+          <button class="product-image" type="button" data-product aria-label="Strickpolo ansehen">
+            <img src="polo.jpg" width="768" height="512" alt="Strickpolo in Schwarz" loading="lazy">
+            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
+          </button>
+          <div class="product-info"><h3>Strickpolo</h3><span data-price-label>79,00 €</span></div>
+          <p class="product-tone"><span style="--tone:#21201d"></span>Schwarz</p>
+        </article>
+      </div>
+      <p class="collection-note">Bilder, Produkte und Preise sind Beispiele für die Shop-Vorschau.</p>
+    </section>
+
+    <section class="editorial container" id="editorial" aria-labelledby="editorial-title">
+      <div class="editorial-image">
+        <img src="campaign.jpg" alt="Kollektion 01 in einer rauen Betonarchitektur" loading="lazy">
+      </div>
+      <div class="editorial-copy">
+        <p class="eyebrow">Editorial / Kollektion 01</p>
+        <h2 id="editorial-title">Die leisen<br><em>Details.</em></h2>
+        <p>Anthrazit, Ecru und Taupe. Weite Silhouetten treffen auf klare Linien. Die erste Kollektion in vier kombinierbaren Stücken.</p>
+        <a class="action outline" href="#kollektion">Stücke ansehen</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="brand" href="#start" aria-label="ALOUÉ Startseite"><img src="wordmark.png" width="640" height="166" alt="ALOUÉ"></a>
+      <nav aria-label="Fußnavigation"><a href="#kollektion">Shop</a><a href="#editorial">Editorial</a></nav>
+      <p>ALOUÉ · Shop-Vorschau</p>
+    </div>
+  </footer>
+
+  <dialog id="menu" aria-labelledby="menu-title">
+    <div class="dialog-heading"><h2 id="menu-title">Menü</h2><button type="button" class="icon-button glass" data-close aria-label="Menü schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <nav class="menu-links" aria-label="Mobile Navigation"><a href="#kollektion" data-close>Shop</a><a href="#editorial" data-close>Editorial</a></nav>
+  </dialog>
+
+  <dialog id="search" aria-labelledby="search-title">
+    <div class="dialog-heading"><h2 id="search-title">Suche</h2><button type="button" class="icon-button glass" data-close aria-label="Suche schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <label class="visually-hidden" for="search-field">Produkte suchen</label>
+    <input id="search-field" type="search" placeholder="Produkt oder Farbe suchen" autocomplete="off" autofocus>
+    <div id="search-results" class="search-results" aria-live="polite"></div>
+  </dialog>
+
+  <dialog id="product" aria-labelledby="product-title">
+    <div class="dialog-heading"><h2 id="product-title"></h2><button type="button" class="icon-button glass" data-close aria-label="Produkt schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <img class="detail-image" alt="">
+    <p class="detail-summary"></p>
+    <form id="product-form">
+      <label for="size">Größe</label>
+      <select id="size" required>
+        <option value="">Größe wählen</option>
+        <option>S</option><option>M</option><option>L</option><option>XL</option>
+      </select>
+      <button class="action dark" type="submit">In die Tasche legen</button>
+    </form>
+  </dialog>
+
+  <dialog id="bag" aria-labelledby="bag-title">
+    <div class="dialog-heading"><h2 id="bag-title">Deine Tasche</h2><button type="button" class="icon-button glass" data-close aria-label="Tasche schließen"><svg><use href="#close-icon"/></svg></button></div>
+    <div id="bag-items" aria-live="polite"></div>
+    <div class="bag-footer" hidden><div><span>Zwischensumme</span><strong data-subtotal></strong></div><p>Diese Vorschau nimmt keine Bestellungen an.</p></div>
+  </dialog>
 </body>
 </html>
