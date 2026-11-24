@@ -191,15 +191,89 @@ document.addEventListener('click', event => {
   if (product) showProduct(product.closest('.product').dataset.id, product);
 });
 
-const filters = [...document.querySelectorAll('[data-filter]')];
-for (const filter of filters) {
-  filter.addEventListener('click', () => {
-    for (const button of filters) button.setAttribute('aria-pressed', button === filter);
-    for (const card of cards) {
-      card.hidden = filter.dataset.filter !== 'all' && card.dataset.category !== filter.dataset.filter;
-    }
+const menswearTrigger = document.querySelector('.menswear-trigger');
+const menswearMenu = document.querySelector('#menswear-menu');
+const firstMenswearLink = menswearMenu.querySelector('a');
+
+function setMenswearOpen(open) {
+  menswearTrigger.setAttribute('aria-expanded', open);
+  menswearMenu.hidden = !open;
+  if (open) firstMenswearLink.focus({ preventScroll: true });
+}
+
+menswearTrigger.addEventListener('click', () => setMenswearOpen(menswearMenu.hidden));
+function dismissMenswearOutside(event) {
+  if (!menswearMenu.hidden && !menswearMenu.contains(event.target) && !menswearTrigger.contains(event.target)) {
+    setMenswearOpen(false);
+  }
+}
+document.addEventListener('click', dismissMenswearOutside);
+document.addEventListener('focusin', dismissMenswearOutside);
+document.addEventListener('keydown', event => {
+  if (menswearMenu.hidden || event.key !== 'Escape') return;
+  event.preventDefault();
+  setMenswearOpen(false);
+  menswearTrigger.focus({ preventScroll: true });
+});
+window.addEventListener('resize', () => {
+  if (!menswearMenu.hidden && menswearTrigger.getClientRects().length === 0) setMenswearOpen(false);
+}, { passive: true });
+
+const collection = document.querySelector('#kollektion');
+const collectionTitle = collection.querySelector('#collection-title');
+const collectionEmpty = collection.querySelector('.collection-empty');
+const collectionStatus = collection.querySelector('[data-collection-status]');
+const filters = [...collection.querySelectorAll('[data-filter]')];
+const menswearLinks = [...document.querySelectorAll('[data-menswear]')];
+const categories = new Map(filters.map(button => [button.dataset.filter, button.textContent.trim()]));
+for (const link of menswearMenu.querySelectorAll('[data-menswear]')) {
+  categories.set(link.dataset.menswear, link.textContent.trim());
+}
+categories.set('all', collectionTitle.textContent);
+const categoryPrefix = '#menswear-';
+
+function showCategory(category) {
+  collectionTitle.textContent = categories.get(category);
+  for (const button of filters) button.setAttribute('aria-pressed', button.dataset.filter === category);
+  for (const link of menswearLinks) {
+    if (link.dataset.menswear === category) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  }
+  let visibleCount = 0;
+  for (const card of cards) {
+    card.hidden = category !== 'all' && card.dataset.category !== category;
+    if (!card.hidden) visibleCount += 1;
+  }
+  collectionEmpty.hidden = visibleCount !== 0;
+  collectionStatus.textContent = visibleCount === 1 ? '1 Stück' : `${visibleCount} Stücke`;
+}
+
+function syncCollectionLocation() {
+  const hash = window.location.hash;
+  const category = hash.startsWith(categoryPrefix) ? hash.slice(categoryPrefix.length) : 'all';
+  showCategory(categories.has(category) ? category : 'all');
+  if (hash.startsWith(categoryPrefix) && categories.has(category)) collection.scrollIntoView({ block: 'start' });
+}
+
+for (const button of filters) {
+  button.addEventListener('click', () => {
+    const category = button.dataset.filter;
+    const hash = category === 'all' ? '#kollektion' : categoryPrefix + category;
+    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
+    showCategory(category);
   });
 }
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#menswear-"], a[href="#kollektion"]');
+  if (!link || event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  if (menswearMenu.contains(link)) setMenswearOpen(false);
+  if (link.hash === window.location.hash && link.hash.startsWith(categoryPrefix)) {
+    event.preventDefault();
+    syncCollectionLocation();
+  }
+});
+window.addEventListener('hashchange', syncCollectionLocation);
+syncCollectionLocation();
 
 productForm.addEventListener('submit', event => {
   event.preventDefault();

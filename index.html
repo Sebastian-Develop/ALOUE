@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="liquid-glass.css">
-  <link rel="stylesheet" href="store.css?v=worker-glass">
-  <script type="module" src="store.js?v=worker-glass"></script>
+  <link rel="stylesheet" href="store.css?v=menswear-films">
+  <script type="module" src="store.js?v=menswear-films"></script>
 </head>
 <body id="start">
   <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -20,6 +20,7 @@
     <symbol id="plus-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
     <symbol id="menu-icon" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></symbol>
+    <symbol id="chevron-icon" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></symbol>
   </svg>
 
   <a class="skip-link" href="#kollektion">Zur Kollektion</a>
@@ -29,7 +30,10 @@
     <div class="bar liquid-glass--subtle">
       <div class="bar-inner liquid-glass__content">
         <nav class="desktop-nav" aria-label="Hauptnavigation">
-          <a href="#kollektion">Shop</a>
+          <button class="menswear-trigger" type="button" aria-expanded="false" aria-controls="menswear-menu">
+            Menswear <svg aria-hidden="true"><use href="#chevron-icon"/></svg>
+          </button>
+          <a href="#filme">Filme</a>
           <a href="#editorial">Editorial</a>
         </nav>
         <button class="icon-button menu-trigger" type="button" data-open="menu" aria-label="Menü öffnen">
@@ -48,6 +52,21 @@
         </div>
       </div>
     </div>
+    <nav class="menswear-menu" id="menswear-menu" aria-label="Menswear-Kategorien" hidden>
+      <ul class="menswear-links">
+        <li class="menswear-all"><a href="#kollektion" data-menswear="all">Alles ansehen</a></li>
+        <li><a href="#menswear-t-shirts" data-menswear="t-shirts">T-Shirts &amp; Longsleeves</a></li>
+        <li><a href="#menswear-hosen" data-menswear="hosen">Hosen &amp; Shorts</a></li>
+        <li><a href="#menswear-weite-hosen" data-menswear="weite-hosen">Weite Hosen</a></li>
+        <li><a href="#menswear-wendewesten" data-menswear="wendewesten">Wendewesten</a></li>
+        <li><a href="#menswear-cardigans" data-menswear="cardigans">Cardigans mit Reißverschluss</a></li>
+        <li><a href="#menswear-strick" data-menswear="strick">Strick &amp; Wolle</a></li>
+        <li><a href="#menswear-field-jackets" data-menswear="field-jackets">Field Jackets</a></li>
+        <li><a href="#menswear-wendejacken" data-menswear="wendejacken">Wendejacken</a></li>
+        <li><a href="#menswear-kapuzenjacken" data-menswear="kapuzenjacken">Kapuzenjacken</a></li>
+        <li><a href="#menswear-sommer-sets" data-menswear="sommer-sets">Sommer-Sets</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
@@ -109,7 +128,60 @@
           <p class="product-tone"><span style="--tone:#21201d"></span>Schwarz</p>
         </article>
       </div>
+      <div class="collection-empty" hidden>
+        <p>Für diese Kategorie sind in der Vorschau noch keine Artikel hinterlegt.</p>
+        <a class="action outline" href="#kollektion">Alle Stücke ansehen</a>
+      </div>
+      <p class="visually-hidden" data-collection-status role="status"></p>
       <p class="collection-note">Bilder, Produkte und Preise sind Beispiele für die Shop-Vorschau.</p>
+    </section>
+
+    <section class="films container" id="filme" aria-labelledby="films-title">
+      <div class="films-heading">
+        <div>
+          <p class="eyebrow">ALOUÉ / Kollektion 01</p>
+          <h2 id="films-title">In Bewegung.</h2>
+        </div>
+        <p class="films-note">Die Kampagnenfilme folgen.</p>
+      </div>
+      <ul class="films-grid" role="list" tabindex="0" aria-label="Kampagnenfilme">
+        <li>
+          <figure class="film">
+            <div class="film-frame">
+              <video preload="none" playsinline controls aria-labelledby="film-overshirt-title"></video>
+              <img src="film-overshirt.jpg" alt="Anthrazitfarbenes Overshirt vor sonnigen Kalksteinsäulen" width="405" height="720" loading="lazy" decoding="async">
+            </div>
+            <figcaption id="film-overshirt-title">Das Overshirt</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="film">
+            <div class="film-frame">
+              <video preload="none" playsinline controls aria-labelledby="film-strick-title"></video>
+              <img src="film-strick.jpg" alt="Feine Rippen und Ärmelbündchen eines ecrufarbenen Pullovers" width="405" height="720" loading="lazy" decoding="async">
+            </div>
+            <figcaption id="film-strick-title">Feiner Strick</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="film">
+            <div class="film-frame">
+              <video preload="none" playsinline controls aria-labelledby="film-hose-title"></video>
+              <img src="film-hose.jpg" alt="Taupefarbene Bundfaltenhose in Bewegung auf einer Betontreppe" width="405" height="720" loading="lazy" decoding="async">
+            </div>
+            <figcaption id="film-hose-title">Die Bundfaltenhose</figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="film">
+            <div class="film-frame">
+              <video preload="none" playsinline controls aria-labelledby="film-polo-title"></video>
+              <img src="film-polo.jpg" alt="Schwarzes Strickpolo im warmen Licht eines Studios" width="405" height="720" loading="lazy" decoding="async">
+            </div>
+            <figcaption id="film-polo-title">Das Strickpolo</figcaption>
+          </figure>
+        </li>
+      </ul>
     </section>
 
     <section class="editorial container" id="editorial" aria-labelledby="editorial-title">
@@ -123,19 +195,56 @@
         <a class="action outline" href="#kollektion">Stücke ansehen</a>
       </div>
     </section>
+
+    <section class="menswear-overview container" id="menswear" aria-labelledby="menswear-overview-title">
+      <h2 id="menswear-overview-title">Menswear entdecken.</h2>
+      <div class="menswear-tiles">
+        <a class="menswear-tile" href="#menswear-jacken">
+          <div class="menswear-tile-image"><img src="overshirt.jpg" alt="" width="768" height="512" loading="lazy"></div>
+          <span>Jacken <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="menswear-tile" href="#menswear-strick">
+          <div class="menswear-tile-image"><img src="knit.jpg" alt="" width="768" height="512" loading="lazy"></div>
+          <span>Strick &amp; Wolle <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="menswear-tile" href="#menswear-hosen">
+          <div class="menswear-tile-image"><img src="trousers.jpg" alt="" width="768" height="512" loading="lazy"></div>
+          <span>Hosen &amp; Shorts <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
     <div class="container footer-inner">
       <a class="brand" href="#start" aria-label="ALOUÉ Startseite"><img src="wordmark.png" width="640" height="166" alt="ALOUÉ"></a>
-      <nav aria-label="Fußnavigation"><a href="#kollektion">Shop</a><a href="#editorial">Editorial</a></nav>
+      <nav aria-label="Fußnavigation"><a href="#kollektion">Menswear</a><a href="#filme">Filme</a><a href="#editorial">Editorial</a></nav>
       <p>ALOUÉ · Shop-Vorschau</p>
     </div>
   </footer>
 
   <dialog id="menu" aria-labelledby="menu-title">
     <div class="dialog-heading"><h2 id="menu-title">Menü</h2><button type="button" class="icon-button glass" data-close aria-label="Menü schließen"><svg><use href="#close-icon"/></svg></button></div>
-    <nav class="menu-links" aria-label="Mobile Navigation"><a href="#kollektion" data-close>Shop</a><a href="#editorial" data-close>Editorial</a></nav>
+    <nav class="menu-links" aria-label="Mobile Navigation">
+      <details>
+        <summary>Menswear <svg aria-hidden="true"><use href="#chevron-icon"/></svg></summary>
+        <ul class="menswear-links">
+          <li><a href="#kollektion" data-menswear="all" data-close>Alles ansehen</a></li>
+          <li><a href="#menswear-t-shirts" data-menswear="t-shirts" data-close>T-Shirts &amp; Longsleeves</a></li>
+          <li><a href="#menswear-hosen" data-menswear="hosen" data-close>Hosen &amp; Shorts</a></li>
+          <li><a href="#menswear-weite-hosen" data-menswear="weite-hosen" data-close>Weite Hosen</a></li>
+          <li><a href="#menswear-wendewesten" data-menswear="wendewesten" data-close>Wendewesten</a></li>
+          <li><a href="#menswear-cardigans" data-menswear="cardigans" data-close>Cardigans mit Reißverschluss</a></li>
+          <li><a href="#menswear-strick" data-menswear="strick" data-close>Strick &amp; Wolle</a></li>
+          <li><a href="#menswear-field-jackets" data-menswear="field-jackets" data-close>Field Jackets</a></li>
+          <li><a href="#menswear-wendejacken" data-menswear="wendejacken" data-close>Wendejacken</a></li>
+          <li><a href="#menswear-kapuzenjacken" data-menswear="kapuzenjacken" data-close>Kapuzenjacken</a></li>
+          <li><a href="#menswear-sommer-sets" data-menswear="sommer-sets" data-close>Sommer-Sets</a></li>
+        </ul>
+      </details>
+      <a href="#editorial" data-close>Editorial</a>
+      <a href="#filme" data-close>Filme</a>
+    </nav>
   </dialog>
 
   <dialog id="search" aria-labelledby="search-title">
