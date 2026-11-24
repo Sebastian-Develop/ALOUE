@@ -1,5 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachCanvasRefraction } from './campaign-refraction.js?v=mobile-glass';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=glass-compat';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -80,14 +80,15 @@ export function attachNavRefraction(bar) {
 
   // Coalesce intermediate sizes from the existing width transition.
   let pending;
-  const resize = new ResizeObserver(() => {
+  const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => {
     if (pending !== undefined) return;
     pending = window.setTimeout(() => {
       pending = undefined;
       updateMap();
     }, 65);
   });
-  resize.observe(bar);
+  resize?.observe(bar);
+  window.addEventListener('resize', updateMap, { passive: true });
   bar.addEventListener('transitionend', event => {
     if (event.propertyName === 'width') updateMap();
   });

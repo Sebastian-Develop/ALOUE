@@ -18,6 +18,8 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
   let frame;
   let output;
   let samples;
+  let weights;
+  let coverage;
   let scale;
   let pending = false;
   let needsWarmup = true;
@@ -27,28 +29,40 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     canvas.height = strip.height = height;
     output = context.createImageData(width, height);
     samples = new Uint32Array(width * height);
+    weights = new Uint8Array(width * height * 2);
+    coverage = new Uint8Array(width * height);
     scale = density;
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const [dx, dy] = rimDisplacement(x + 0.5, y + 0.5, width, height, scale);
-        const sampleX = Math.min(width - 1, Math.max(0, Math.round(x + dx)));
-        const sampleY = Math.min(height - 1, Math.max(0, Math.round(y + dy)));
-        samples[y * width + x] = sampleY * width + sampleX;
+        const sampleX = Math.min(width - 1.001, Math.max(0, x + dx));
+        const sampleY = Math.min(height - 1.001, Math.max(0, y + dy));
+        const left = Math.floor(sampleX);
+        const top = Math.floor(sampleY);
+        const index = y * width + x;
+        samples[index] = top * width + left;
+        weights[index * 2] = Math.round((sampleX - left) * 255);
+        weights[index * 2 + 1] = Math.round((sampleY - top) * 255);
+        coverage[index] = Math.min(255, Math.round(Math.hypot(dx, dy) * 42 / scale));
       }
     }
   }
 
   function capture(section) {
-    const entry = {};
+    const entry = { attempts: (snapshots.get(section)?.attempts ?? 0) + 1 };
     snapshots.set(section, entry);
     pending = true;
+    const bounds = section.getBoundingClientRect();
     import('./html2canvas.min.js')
       .then(() => document.fonts?.ready)
       .then(() => globalThis.html2canvas(section, {
         backgroundColor: null,
-        scale: Math.min(window.devicePixelRatio || 1, 2),
+        scale: Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4000000 / (bounds.width * bounds.height))),
+        scrollX: 0,
+        scrollY: 0,
         logging: false,
         onclone(_document, copy) {
+          if (section.classList.contains('hero')) copy.style.minHeight = bounds.height + 'px';
           // html2canvas paints background-size: cover, but does not paint
           // object-fit: cover. Translate those images in the render copy.
           for (const image of copy.querySelectorAll('img')) {
@@ -71,11 +85,78 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
         },
       }))
       .then(bitmap => { entry.bitmap = bitmap; })
-      .catch(() => { entry.failed = true; })
+      .catch(() => { entry.failedAt = performance.now(); })
       .finally(() => {
         pending = false;
         schedulePaint();
       });
+  }
+
+  function drawLiveImages(section, bounds, density) {
+    for (const image of section.querySelectorAll('img')) {
+      if (!image.complete || !image.naturalWidth || image.closest('[hidden]')) continue;
+      const rect = image.getBoundingClientRect();
+      if (rect.top >= bounds.bottom || rect.bottom <= bounds.top || !rect.height) continue;
+
+      const style = getComputedStyle(image);
+      const left = (rect.left - bounds.left) * density;
+      const top = (rect.top - bounds.top) * density;
+      const width = rect.width * density;
+      const height = rect.height * density;
+      stripContext.save();
+      stripContext.beginPath();
+      const radius = parseFloat(getComputedStyle(image.parentElement).borderTopLeftRadius) * density;
+      if (stripContext.roundRect && radius) stripContext.roundRect(left, top, width, height, radius);
+      else stripContext.rect(left, top, width, height);
+      stripContext.clip();
+
+      if (style.objectFit === 'cover') {
+        const factor = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+        const paintedWidth = image.naturalWidth * factor;
+        const paintedHeight = image.naturalHeight * factor;
+        const [x = '50%', y = '50%'] = style.objectPosition.split(' ');
+        stripContext.drawImage(
+          image,
+          left + (width - paintedWidth) * parseFloat(x) / 100,
+          top + (height - paintedHeight) * parseFloat(y) / 100,
+          paintedWidth,
+          paintedHeight
+        );
+      } else {
+        stripContext.drawImage(image, left, top, width, height);
+      }
+      stripContext.restore();
+    }
+  }
+
+  function warpStrip(width, height) {
+    const source = stripContext.getImageData(0, 0, width, height).data;
+    const sourcePixels = new Uint32Array(source.buffer);
+    const destination = new Uint32Array(output.data.buffer);
+    const row = width * 4;
+    for (let pixel = 0; pixel < samples.length; pixel++) {
+      const sample = samples[pixel];
+      const x = weights[pixel * 2] / 255;
+      const y = weights[pixel * 2 + 1] / 255;
+      if (!x && !y) {
+        destination[pixel] = sourcePixels[sample];
+        continue;
+      }
+      const index = sample * 4;
+      const target = pixel * 4;
+      if (!source[index + 3] || !source[index + 7] ||
+          !source[index + row + 3] || !source[index + row + 7]) {
+        destination[pixel] = sourcePixels[sample];
+        continue;
+      }
+      for (let channel = 0; channel < 3; channel++) {
+        const offset = index + channel;
+        const top = source[offset] + (source[offset + 4] - source[offset]) * x;
+        const bottom = source[offset + row] + (source[offset + row + 4] - source[offset + row]) * x;
+        output.data[target + channel] = top + (bottom - top) * y;
+      }
+      output.data[target + 3] = 255;
+    }
   }
 
   function paint() {
@@ -88,18 +169,25 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     if (!bar.parentElement.classList.contains('is-scrolled')) return;
 
     const bounds = canvas.getBoundingClientRect();
-    const intersecting = sections.map(section => ({
+    const positions = sections.map(section => ({
       section,
       bounds: section.getBoundingClientRect(),
       snapshot: snapshots.get(section),
-    })).filter(({ bounds: section }) => section.top < bounds.bottom && section.bottom > bounds.top);
+    }));
+    const intersecting = positions.filter(({ bounds: section }) =>
+      section.top < bounds.bottom && section.bottom > bounds.top
+    );
 
-    const missing = intersecting.find(({ snapshot }) => !snapshot);
-    if (missing && !pending) capture(missing.section);
-    if (intersecting.some(({ snapshot }) => !snapshot?.bitmap)) {
-      bar.removeAttribute('data-refraction');
-      return;
-    }
+    // Prepare the next sections before they cross the glass. A failed
+    // snapshot leaves the directly sampled image path available.
+    const candidates = [...intersecting, ...positions.filter(({ bounds: section }) =>
+      section.top >= bounds.bottom && section.top < bounds.bottom + window.innerHeight * 0.8
+    )];
+    const now = performance.now();
+    const next = candidates.find(({ snapshot }) =>
+      !snapshot || (snapshot.attempts < 2 && now - snapshot.failedAt > 1000)
+    );
+    if (next && !pending) capture(next.section);
 
     const density = Math.min(window.devicePixelRatio || 1, 2);
     const width = Math.round(bounds.width * density);
@@ -111,23 +199,41 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
 
     stripContext.fillStyle = paper;
     stripContext.fillRect(0, 0, width, height);
-    for (const { bounds: section, snapshot } of intersecting) {
-      stripContext.drawImage(
-        snapshot.bitmap,
-        (section.left - bounds.left) * scale,
-        (section.top - bounds.top) * scale,
-        section.width * scale,
-        section.height * scale
-      );
+    // Render the live image strip as soon as each browser decodes the images.
+    // A section snapshot adds text and other layers when it becomes available.
+    const complete = intersecting.every(({ snapshot }) => snapshot?.bitmap);
+    if (!complete) stripContext.clearRect(0, 0, width, height);
+    for (const entry of intersecting) {
+      const { section, bounds: position, snapshot } = entry;
+      if (snapshot?.bitmap) {
+        stripContext.drawImage(
+          snapshot.bitmap,
+          (position.left - bounds.left) * scale,
+          (position.top - bounds.top) * scale,
+          position.width * scale,
+          position.height * scale
+        );
+      } else {
+        drawLiveImages(section, bounds, scale);
+      }
     }
 
-    const source = new Uint32Array(stripContext.getImageData(0, 0, width, height).data.buffer);
-    const destination = new Uint32Array(output.data.buffer);
-    for (let pixel = 0; pixel < samples.length; pixel++) {
-      destination[pixel] = source[samples[pixel]];
+    try {
+      warpStrip(width, height);
+      if (!complete) {
+        // Keep the true page visible in the unwarped middle while the richer
+        // scene is preparing. Only the rim is painted by the direct sampler.
+        for (let index = 0; index < coverage.length; index++) {
+          const alpha = index * 4 + 3;
+          output.data[alpha] = Math.min(output.data[alpha], coverage[index]);
+        }
+      }
+      context.putImageData(output, 0, 0);
+      bar.setAttribute('data-refraction', 'canvas');
+      bar.setAttribute('data-refraction-source', complete ? 'sections' : 'images');
+    } catch {
+      bar.removeAttribute('data-refraction');
     }
-    context.putImageData(output, 0, 0);
-    bar.setAttribute('data-refraction', 'canvas');
   }
 
   function schedulePaint() {
@@ -149,7 +255,10 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     snapshots.delete(collection);
     schedulePaint();
   }).observe(collection, { subtree: true, attributeFilter: ['hidden'] });
-  new ResizeObserver(schedulePaint).observe(bar);
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(schedulePaint).observe(bar);
+  for (const image of document.querySelectorAll('main img')) {
+    image.addEventListener('load', schedulePaint);
+  }
   window.addEventListener('scroll', schedulePaint, { passive: true });
   window.addEventListener('pageshow', schedulePaint);
   schedulePaint();

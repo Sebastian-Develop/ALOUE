@@ -9,26 +9,26 @@ window.addEventListener('pageshow', updateMasthead);
 updateMasthead();
 
 const reducedTransparency = window.matchMedia('(prefers-reduced-transparency: reduce)');
-const supportsGlass = CSS.supports('backdrop-filter', 'blur(10px)') ||
-  CSS.supports('-webkit-backdrop-filter', 'blur(10px)');
-
-if (supportsGlass) {
-  const updateGlass = () => {
-    bar.classList.toggle('liquid-glass', !reducedTransparency.matches);
-  };
-  reducedTransparency.addEventListener('change', updateGlass);
-  updateGlass();
-
-  import('./nav-refraction.js?v=mobile-glass').then(({ attachNavRefraction }) => {
-    const updateMap = attachNavRefraction(bar);
-    if (updateMap) {
-      reducedTransparency.addEventListener('change', updateMap);
-      updateMap();
-    }
-  }).catch(() => {
-    // The CSS surface remains available without SVG backdrop support.
-  });
+function onTransparencyChange(callback) {
+  if (reducedTransparency.addEventListener) reducedTransparency.addEventListener('change', callback);
+  else reducedTransparency.addListener(callback);
 }
+
+const updateGlass = () => {
+  bar.classList.toggle('liquid-glass', !reducedTransparency.matches);
+};
+onTransparencyChange(updateGlass);
+updateGlass();
+
+import('./nav-refraction.js?v=glass-compat').then(({ attachNavRefraction }) => {
+  const updateMap = attachNavRefraction(bar);
+  if (updateMap) {
+    onTransparencyChange(updateMap);
+    updateMap();
+  }
+}).catch(() => {
+  // Keep the CSS glass surface if the optics module cannot load.
+});
 
 const cards = [...document.querySelectorAll('.product')];
 const products = new Map(cards.map(card => {

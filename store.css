@@ -68,7 +68,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .refraction-layer {
   position: absolute;
   inset: -1px;
-  z-index: -2;
+  z-index: 0;
   width: calc(100% + 2px);
   height: calc(100% + 2px);
   pointer-events: none;
@@ -83,18 +83,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   filter: saturate(1.08);
   opacity: 1;
 }
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"]::before {
+  z-index: 1;
+}
+.masthead.is-scrolled .bar.liquid-glass[data-refraction-source="sections"]::before {
+  background:
+    linear-gradient(rgb(var(--lg-tint) / var(--lg-opacity)), rgb(var(--lg-tint) / var(--lg-opacity))),
+    linear-gradient(115deg, #fff4, #fff2 40%, #fff2 65%, #fff4);
+}
 .masthead.is-scrolled .bar.liquid-glass::before,
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
 .masthead .bar.liquid-glass::after {
-  padding: 2px;
-  box-shadow: none;
-  background:
-    radial-gradient(ellipse 8rem 120% at 100% 0%, #fff 0%, #fffc 30%, #fff0 85%),
-    radial-gradient(ellipse 8rem 120% at 0% 100%, #fcfffffa 0%, #fff9 30%, #fff0 85%),
-    linear-gradient(180deg, #fffc, #fff2 32%, #473b302e 60%, #fff8);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+  box-shadow: inset 0 1px 1px #fffe, inset 0 -1px 1px #fff9;
   mix-blend-mode: normal;
+}
+@supports (mask-composite: exclude) or (-webkit-mask-composite: xor) {
+  .masthead .bar.liquid-glass::after {
+    padding: 2px;
+    box-shadow: none;
+    background:
+      radial-gradient(ellipse 8rem 120% at 100% 0%, #fff 0%, #fffc 30%, #fff0 85%),
+      radial-gradient(ellipse 8rem 120% at 0% 100%, #fcfffffa 0%, #fff9 30%, #fff0 85%),
+      linear-gradient(180deg, #fffc, #fff2 32%, #473b302e 60%, #fff8);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
 }
 .bar-inner { position: relative; max-width: 1420px; margin-inline: auto; min-height: 62px; padding: 0 clamp(.65rem, 2.75vw, 2.6rem); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; }
 .desktop-nav, .tools { display: flex; align-items: center; gap: clamp(.75rem, 2vw, 1.75rem); }
