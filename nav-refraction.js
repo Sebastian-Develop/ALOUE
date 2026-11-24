@@ -1,5 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachCampaignRefraction } from './campaign-refraction.js';
+import { attachSceneRefraction } from './campaign-refraction.js';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -50,7 +50,8 @@ export function attachNavRefraction(bar) {
   const chromium = navigator.userAgentData?.brands.some(({ brand }) => brand === 'Chromium') ??
     (/\bChrome\//.test(navigator.userAgent) && !/\bCriOS\//.test(navigator.userAgent));
   const nativeBackdrop = chromium && CSS.supports('backdrop-filter', `url(#${filterId})`);
-  if (!nativeBackdrop) return attachCampaignRefraction(bar);
+  if (!nativeBackdrop && !CSS.supports('filter', `url(#${filterId})`)) return;
+  const alignScene = nativeBackdrop ? null : attachSceneRefraction(bar);
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -74,7 +75,8 @@ export function attachNavRefraction(bar) {
     drawDisplacementMap(context, width, height);
     setAttributes(filter, { width, height });
     setAttributes(map, { x: 0, y: 0, width, height, href: canvas.toDataURL() });
-    bar.setAttribute('data-refraction', '');
+    bar.setAttribute('data-refraction', nativeBackdrop ? 'native' : 'scene');
+    alignScene?.();
   }
 
   // Coalesce intermediate sizes from the existing width transition.
@@ -90,5 +92,8 @@ export function attachNavRefraction(bar) {
   bar.addEventListener('transitionend', event => {
     if (event.propertyName === 'width') updateMap();
   });
-  return updateMap;
+  return () => {
+    updateMap();
+    alignScene?.();
+  };
 }

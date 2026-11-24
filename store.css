@@ -61,20 +61,32 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
   backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
 }
-.masthead.is-scrolled .bar.liquid-glass[data-refraction] {
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="native"] {
   /* The lens shifts live pixels. Keep the center sharp. */
   backdrop-filter: var(--lg-filter) saturate(1.08);
 }
-.campaign-refraction {
+.refraction-layer {
   position: absolute;
-  inset: 0;
+  inset: -1px;
   z-index: -2;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   pointer-events: none;
+  background: var(--paper);
+  opacity: 0;
+  transition: opacity .36s;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-campaign-refraction] {
-  --lg-blur: 1px;
+.refraction-scene {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: flow-root;
+}
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="scene"] {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="scene"] .refraction-layer {
+  filter: var(--lg-filter) saturate(1.08);
+  opacity: 1;
 }
 .masthead.is-scrolled .bar.liquid-glass::before,
 .masthead.is-scrolled .bar.liquid-glass::after { opacity: 1; }
@@ -223,7 +235,7 @@ dialog input, dialog select { width: 100%; min-height: 44px; padding: .6rem .85r
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .product-image img, .masthead .bar, .masthead .bar::before, .masthead .bar::after { transition: none; }
+  .product-image img, .masthead .bar, .masthead .bar::before, .masthead .bar::after, .refraction-layer { transition: none; }
 }
 @media (prefers-reduced-transparency: reduce) {
   .masthead.is-scrolled .bar:not(.liquid-glass), .glass { background: #f1ebdf; backdrop-filter: none; -webkit-backdrop-filter: none; }
