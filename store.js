@@ -13,15 +13,20 @@ const supportsGlass = CSS.supports('backdrop-filter', 'blur(10px)') ||
   CSS.supports('-webkit-backdrop-filter', 'blur(10px)');
 
 if (supportsGlass) {
-  import('./inject-filter.js').then(({ injectLiquidGlassFilter }) => {
-    injectLiquidGlassFilter({ scale: 14, animate: false });
-    const updateGlass = () => {
-      bar.classList.toggle('liquid-glass', !reducedTransparency.matches);
-    };
-    reducedTransparency.addEventListener('change', updateGlass);
-    updateGlass();
+  const updateGlass = () => {
+    bar.classList.toggle('liquid-glass', !reducedTransparency.matches);
+  };
+  reducedTransparency.addEventListener('change', updateGlass);
+  updateGlass();
+
+  import('./nav-refraction.js').then(({ attachNavRefraction }) => {
+    const updateMap = attachNavRefraction(bar);
+    if (updateMap) {
+      reducedTransparency.addEventListener('change', updateMap);
+      updateMap();
+    }
   }).catch(() => {
-    // The CSS glass treatment remains available if the optics module fails.
+    // The CSS surface remains available without SVG backdrop support.
   });
 }
 
