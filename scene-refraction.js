@@ -1,4 +1,4 @@
-import { attachCanvasRefraction } from './campaign-refraction.js?v=clear-rim';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=fluid-glass';
 
 const vertexSource = `
   attribute vec2 position;
@@ -88,20 +88,25 @@ function createLens(canvas) {
     return texture;
   }
 
+  let configuredDensity;
   return {
     prepare: textureFor,
-    draw(width, height, density, layers) {
+    draw(width, height, density, layers, count) {
       if (gl.isContextLost()) return;
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+      if (canvas.width !== width || canvas.height !== height || configuredDensity !== density) {
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        gl.viewport(0, 0, width, height);
+        gl.uniform2f(resolution, width, height);
+        gl.uniform1f(pixelDensity, density);
+        configuredDensity = density;
       }
-      gl.viewport(0, 0, width, height);
-      gl.uniform2f(resolution, width, height);
-      gl.uniform1f(pixelDensity, density);
       gl.clear(gl.COLOR_BUFFER_BIT);
-      for (const { source, textureRect, clipRect } of layers) {
-        const texture = textureFor(source);
+      for (let i = 0; i < count; i++) {
+        const { source, textureRect, clipRect } = layers[i];
+        const texture = textures.get(source);
         if (!texture) continue;
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform4f(textureBox, ...textureRect);
@@ -254,6 +259,14 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   let captureTimer;
   let lastScroll = -Infinity;
   let fallbackActive = false;
+  let geometry;
+  let geometryDirty = true;
+  let shown = false;
+  let paintedTop;
+  const layers = Array.from({ length: sections.length + photos.flat().length }, () => ({
+    source: null, textureRect: new Float32Array(4), clipRect: new Float32Array(4),
+  }));
+  let layerCount = 0;
 
   function measure() {
     const scroll = window.scrollY;
@@ -283,7 +296,7 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   function captureNext() {
     captureTimer = undefined;
     if (capturing || fallbackActive) return;
-    if (performance.now() - lastScroll < 175) {
+    if (performance.now() - lastScroll < 300) {
       queueCapture();
       return;
     }
@@ -302,51 +315,80 @@ export function attachSceneRefraction(bar, rimDisplacement) {
       if (bitmap && lens.prepare(bitmap)) entry.bitmap = bitmap;
     } finally {
       capturing = false;
+      paintedTop = undefined;
       schedulePaint();
       if (snapshots.size < sections.length) queueCapture();
     }
   }
 
   function queueCapture() {
-    if (captureTimer === undefined && !capturing) captureTimer = window.setTimeout(captureNext, 180);
+    if (captureTimer === undefined && !capturing) captureTimer = window.setTimeout(captureNext, 300);
   }
 
   function paint() {
     frame = undefined;
-    if (fallbackActive || !bar.classList.contains('liquid-glass') || !bar.parentElement.classList.contains('is-scrolled')) return;
+    if (fallbackActive) return;
+    const active = bar.classList.contains('liquid-glass') && bar.parentElement.classList.contains('is-scrolled');
+    if (!active) {
+      shown = false;
+      paintedTop = undefined;
+      return;
+    }
+    if (!shown || geometryDirty) {
+      const header = bar.parentElement.getBoundingClientRect();
+      const gutter = parseFloat(getComputedStyle(document.querySelector('.hero')).marginLeft);
+      const width = Math.min(header.width - gutter * 2, 1240);
+      const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      geometry = {
+        left: header.left + (header.width - width) / 2,
+        top: 0.65 * rootSize,
+        width: Math.round(width * density),
+        height: Math.round(bar.offsetHeight * density),
+      };
+      geometryDirty = false;
+      shown = true;
+      paintedTop = undefined;
+    }
+    if (geometry.width < geometry.height || !geometry.height) return;
     if (layoutDirty) measure();
-    const bounds = canvas.getBoundingClientRect();
-    const top = bounds.top + window.scrollY;
-    const width = Math.round(bounds.width * density);
-    const height = Math.round(bounds.height * density);
-    if (width < height || !height) return;
-    const layerRect = (left, layerTop, layerWidth, layerHeight) => [
-      (left - bounds.left) * density, (layerTop - top) * density,
-      layerWidth * density, layerHeight * density,
-    ];
-    const layers = [];
+
+    const top = Math.max(0, window.scrollY) + geometry.top;
+    if (top === paintedTop) {
+      if (performance.now() - lastScroll < 160) schedulePaint();
+      return;
+    }
+    paintedTop = top;
+    const bottom = top + geometry.height / density;
+    layerCount = 0;
+    function addLayer(source, x, y, width, height, clipX = x, clipY = y, clipWidth = width, clipHeight = height) {
+      const layer = layers[layerCount++];
+      layer.source = source;
+      layer.textureRect[0] = (x - geometry.left) * density;
+      layer.textureRect[1] = (y - top) * density;
+      layer.textureRect[2] = width * density;
+      layer.textureRect[3] = height * density;
+      layer.clipRect[0] = (clipX - geometry.left) * density;
+      layer.clipRect[1] = (clipY - top) * density;
+      layer.clipRect[2] = clipWidth * density;
+      layer.clipRect[3] = clipHeight * density;
+    }
     for (let index = 0; index < sections.length; index++) {
       const section = positions[index];
-      if (section.top >= top + bounds.height || section.top + section.height <= top) continue;
+      if (section.top >= bottom || section.top + section.height <= top) continue;
       const bitmap = snapshots.get(sections[index])?.bitmap;
       if (bitmap) {
-        const rect = layerRect(section.left, section.top, section.width, section.height);
-        layers.push({ source: bitmap, textureRect: rect, clipRect: rect });
+        addLayer(bitmap, section.left, section.top, section.width, section.height);
         continue;
       }
-
       for (const photo of photoPositions[index]) {
-        if (photo.top >= top + bounds.height || photo.top + photo.height <= top) continue;
-        layers.push({
-          source: photo.image,
-          textureRect: layerRect(photo.x, photo.y, photo.drawWidth, photo.drawHeight),
-          clipRect: layerRect(photo.left, photo.top, photo.width, photo.height),
-        });
+        if (photo.top >= bottom || photo.top + photo.height <= top) continue;
+        addLayer(photo.image, photo.x, photo.y, photo.drawWidth, photo.drawHeight,
+          photo.left, photo.top, photo.width, photo.height);
       }
     }
-
-    lens.draw(width, height, density, layers);
+    lens.draw(geometry.width, geometry.height, density, layers, layerCount);
     if (!bar.hasAttribute('data-refraction')) bar.setAttribute('data-refraction', 'canvas');
+    if (performance.now() - lastScroll < 160) schedulePaint();
   }
 
   function schedulePaint() {
@@ -354,6 +396,7 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   }
   function refreshLayout() {
     layoutDirty = true;
+    paintedTop = undefined;
     schedulePaint();
   }
   function rebuildSnapshots() {
@@ -365,20 +408,22 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   let viewportWidth = window.innerWidth;
   window.addEventListener('resize', () => {
     if (window.innerWidth !== viewportWidth) {
+      geometryDirty = true;
       viewportWidth = window.innerWidth;
       rebuildSnapshots();
-    } else refreshLayout();
+    } else schedulePaint();
   }, { passive: true });
   window.addEventListener('scroll', () => {
     lastScroll = performance.now();
     schedulePaint();
   }, { passive: true });
   window.addEventListener('pageshow', refreshLayout);
+  window.addEventListener('touchmove', schedulePaint, { passive: true });
   bar.addEventListener('transitionend', schedulePaint);
   if (typeof ResizeObserver !== 'undefined') {
     const resize = new ResizeObserver(refreshLayout);
     resize.observe(document.querySelector('main'));
-    resize.observe(bar);
+
   }
   for (const image of photos.flat()) {
     const prepareImage = () => {
