@@ -19,7 +19,7 @@ if (supportsGlass) {
   reducedTransparency.addEventListener('change', updateGlass);
   updateGlass();
 
-  import('./nav-refraction.js').then(({ attachNavRefraction }) => {
+  import('./nav-refraction.js?v=mobile-glass').then(({ attachNavRefraction }) => {
     const updateMap = attachNavRefraction(bar);
     if (updateMap) {
       reducedTransparency.addEventListener('change', updateMap);

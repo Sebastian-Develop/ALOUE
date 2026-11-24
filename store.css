@@ -69,23 +69,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   position: absolute;
   inset: -1px;
   z-index: -2;
-  overflow: hidden;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
   pointer-events: none;
-  background: var(--paper);
   opacity: 0;
   transition: opacity .36s;
 }
-.refraction-scene {
-  position: absolute;
-  inset: 0 auto auto 0;
-  display: flow-root;
-}
-.masthead.is-scrolled .bar.liquid-glass[data-refraction="scene"] {
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"] {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-refraction="scene"] .refraction-layer {
-  filter: var(--lg-filter) saturate(1.08);
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="canvas"] .refraction-layer {
+  filter: saturate(1.08);
   opacity: 1;
 }
 .masthead.is-scrolled .bar.liquid-glass::before,

@@ -1,5 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachSceneRefraction } from './campaign-refraction.js';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=mobile-glass';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
@@ -11,33 +11,31 @@ function setAttributes(node, attributes) {
   }
 }
 
-// The flat center samples the page in place. A rounded bevel bends it inward
-// along the straight edges and radially around the two end caps.
+// The same capsule profile drives both the native SVG and the mobile canvas.
+function rimDisplacement(x, y, width, height, scale = 1) {
+  const radius = height / 2;
+  const bevel = Math.min(21 * scale, radius);
+  const dx = x - Math.min(Math.max(x, radius), width - radius);
+  const dy = y - radius;
+  const distance = Math.hypot(dx, dy);
+  const depth = radius - distance;
+  if (depth < -scale || depth >= bevel || !distance) return [0, 0];
+
+  const slope = 1 - Math.max(0, depth) / bevel;
+  const strength = 0.43 + 0.06 * Math.abs(dx) / distance;
+  const bend = -strength * slope ** 2 * filterScale * scale / distance;
+  return [dx * bend, dy * bend];
+}
+
 function drawDisplacementMap(context, width, height) {
   const image = context.createImageData(width, height);
-  const radius = height / 2;
-  const bevel = Math.min(21, radius);
   const { data } = image;
-
   for (let y = 0; y < height; y++) {
-    const dy = y + 0.5 - radius;
     for (let x = 0; x < width; x++) {
-      const px = x + 0.5;
-      const dx = px - Math.min(Math.max(px, radius), width - radius);
-      const distance = Math.hypot(dx, dy);
-      const depth = radius - distance;
+      const [dx, dy] = rimDisplacement(x + 0.5, y + 0.5, width, height);
       const pixel = (y * width + x) * 4;
-      let bend = 0;
-
-      if (depth >= -1 && depth < bevel && distance > 0) {
-        const slope = 1 - Math.max(0, depth) / bevel;
-        // Curved ends catch a little more light than the straight edges.
-        const curvature = Math.abs(dx) / distance;
-        const strength = 0.43 + 0.06 * curvature;
-        bend = -strength * slope ** 2 / distance;
-      }
-      data[pixel] = 128 + 255 * dx * bend;
-      data[pixel + 1] = 128 + 255 * dy * bend;
+      data[pixel] = 128 + 255 * dx / filterScale;
+      data[pixel + 1] = 128 + 255 * dy / filterScale;
       data[pixel + 2] = 128;
       data[pixel + 3] = 255;
     }
@@ -49,9 +47,11 @@ export function attachNavRefraction(bar) {
   // SVG filters on a live CSS backdrop are supported in Chromium.
   const chromium = navigator.userAgentData?.brands.some(({ brand }) => brand === 'Chromium') ??
     (/\bChrome\//.test(navigator.userAgent) && !/\bCriOS\//.test(navigator.userAgent));
-  const nativeBackdrop = chromium && CSS.supports('backdrop-filter', `url(#${filterId})`);
-  if (!nativeBackdrop && !CSS.supports('filter', `url(#${filterId})`)) return;
-  const alignScene = nativeBackdrop ? null : attachSceneRefraction(bar);
+  const mobile = window.matchMedia('(max-width: 780px)').matches ||
+    navigator.userAgentData?.mobile || /Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (mobile || !chromium || !CSS.supports('backdrop-filter', `url(#${filterId})`)) {
+    return attachCanvasRefraction(bar, rimDisplacement);
+  }
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -75,8 +75,7 @@ export function attachNavRefraction(bar) {
     drawDisplacementMap(context, width, height);
     setAttributes(filter, { width, height });
     setAttributes(map, { x: 0, y: 0, width, height, href: canvas.toDataURL() });
-    bar.setAttribute('data-refraction', nativeBackdrop ? 'native' : 'scene');
-    alignScene?.();
+    bar.setAttribute('data-refraction', 'native');
   }
 
   // Coalesce intermediate sizes from the existing width transition.
@@ -92,8 +91,5 @@ export function attachNavRefraction(bar) {
   bar.addEventListener('transitionend', event => {
     if (event.propertyName === 'width') updateMap();
   });
-  return () => {
-    updateMap();
-    alignScene?.();
-  };
+  return updateMap;
 }
