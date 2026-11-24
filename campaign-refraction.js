@@ -20,6 +20,7 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
   let layoutChanged = true;
   let output;
   let rim;
+  let targetPixels;
   let resizing = false;
 
   function readImage(image) {
@@ -30,6 +31,14 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     sourceContext.canvas.width = width;
     sourceContext.canvas.height = height;
     sourceContext.drawImage(image, 0, 0, width, height);
+    if (image.classList.contains('hero-image')) {
+      const scrim = sourceContext.createLinearGradient(0, 0, 0, height);
+      scrim.addColorStop(0.2, '#211a1610');
+      scrim.addColorStop(0.49, '#211a1660');
+      scrim.addColorStop(1, '#211a16e6');
+      sourceContext.fillStyle = scrim;
+      sourceContext.fillRect(0, 0, width, height);
+    }
     try {
       const data = sourceContext.getImageData(0, 0, width, height).data;
       sources.set(image, { width, height, pixels: new Uint32Array(data.buffer) });
@@ -61,7 +70,6 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
         top: rect.top + scroll + (rect.height - height) * parseFloat(y) / 100,
         scaleX: source.width / width,
         scaleY: source.height / height,
-        hero: image.classList.contains('hero-image'),
       });
     }
     layoutChanged = false;
@@ -71,20 +79,28 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     canvas.width = width;
     canvas.height = height;
     output = context.createImageData(width, height);
-    rim = [];
+    targetPixels = new Uint32Array(output.data.buffer);
+    const indices = [];
+    const offsetsX = [];
+    const offsetsY = [];
+    const opacity = [];
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const [dx, dy] = rimDisplacement(x + 0.5, y + 0.5, width, height, density);
         const bend = Math.hypot(dx, dy) / density;
         if (bend < 1) continue;
-        rim.push({
-          index: y * width + x,
-          x: (x + 0.5 + dx) / density,
-          y: (y + 0.5 + dy) / density,
-          alpha: Math.round(206 * Math.min(1, (bend - 1) / 7)),
-        });
+        indices.push(y * width + x);
+        offsetsX.push((x + 0.5 + dx) / density);
+        offsetsY.push((y + 0.5 + dy) / density);
+        opacity.push(Math.round(206 * Math.min(1, (bend - 1) / 7)));
       }
     }
+    rim = {
+      indices: Uint32Array.from(indices),
+      x: Float32Array.from(offsetsX),
+      y: Float32Array.from(offsetsY),
+      opacity: Uint8Array.from(opacity),
+    };
   }
 
   function paint() {
@@ -116,28 +132,21 @@ export function attachCanvasRefraction(bar, rimDisplacement) {
     const stretchY = height / canvas.height;
 
     const bytes = output.data;
-    const pixels = new Uint32Array(bytes.buffer);
-    pixels.fill(0);
-    for (const { source, bounds, left, top: imageTop, scaleX, scaleY, hero } of visible) {
-      for (const sample of rim) {
-        const x = lens.left + sample.x * stretchX;
-        const y = top + sample.y * stretchY;
+    const { indices, x: offsetsX, y: offsetsY, opacity } = rim;
+    const lensLeft = lens.left;
+    targetPixels.fill(0);
+    for (const entry of visible) {
+      const { source, bounds, left, top: imageTop, scaleX, scaleY } = entry;
+      const { width: sourceWidth, height: sourceHeight, pixels: sourcePixels } = source;
+      for (let i = 0; i < indices.length; i++) {
+        const x = lensLeft + offsetsX[i] * stretchX;
+        const y = top + offsetsY[i] * stretchY;
         if (x < bounds.left || x >= bounds.right || y < bounds.top || y >= bounds.bottom) continue;
-        const sx = Math.min(source.width - 1, Math.max(0, Math.floor((x - left) * scaleX)));
-        const sy = Math.min(source.height - 1, Math.max(0, Math.floor((y - imageTop) * scaleY)));
-        const index = sample.index * 4;
-        pixels[sample.index] = source.pixels[sy * source.width + sx];
-        if (hero) {
-          // Match the campaign's vertical dark scrim inside the sampled area.
-          const progress = (y - bounds.top) / (bounds.bottom - bounds.top);
-          const shade = progress < 0.49
-            ? 0.06 + Math.max(0, progress - 0.20) * 1.08
-            : 0.376 + (progress - 0.49) * 1.03;
-          bytes[index] = bytes[index] * (1 - shade) + 33 * shade;
-          bytes[index + 1] = bytes[index + 1] * (1 - shade) + 26 * shade;
-          bytes[index + 2] = bytes[index + 2] * (1 - shade) + 22 * shade;
-        }
-        bytes[index + 3] = sample.alpha;
+        const sx = Math.min(sourceWidth - 1, Math.max(0, ((x - left) * scaleX) | 0));
+        const sy = Math.min(sourceHeight - 1, Math.max(0, ((y - imageTop) * scaleY) | 0));
+        const index = indices[i];
+        targetPixels[index] = sourcePixels[sy * sourceWidth + sx];
+        bytes[index * 4 + 3] = opacity[i];
       }
     }
 

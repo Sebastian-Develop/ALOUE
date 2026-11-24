@@ -75,7 +75,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   opacity: 0;
   transition: opacity .36s;
 }
-.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"]) {
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"] {
   --lg-opacity: .35;
   background-image: none;
   border-color: #ffffff52;
@@ -83,13 +83,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas-chrome"] {
-  --lg-opacity: .43;
-}
-.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"])::before {
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"]::before {
   z-index: 1;
 }
-.masthead.is-scrolled .bar.liquid-glass:is([data-refraction="canvas"], [data-refraction="canvas-chrome"]) .refraction-layer {
+.masthead.is-scrolled .bar.liquid-glass[data-refraction="canvas"] .refraction-layer {
   opacity: 1;
   transition: none;
 }
@@ -113,7 +110,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     mask-composite: exclude;
   }
 }
-.masthead.is-scrolled .bar.liquid-glass:is([data-renderer="canvas"], [data-renderer="canvas-chrome"])::after {
+.masthead.is-scrolled .bar.liquid-glass[data-renderer="canvas"]::after {
   padding: 1px;
   opacity: .55;
 }
