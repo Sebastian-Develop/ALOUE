@@ -1,5 +1,5 @@
 import { injectLiquidGlassFilter } from './inject-filter.js';
-import { attachSceneRefraction } from './scene-refraction.js?v=live-glass';
+import { attachSceneRefraction } from './scene-refraction.js?v=clear-rim';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';

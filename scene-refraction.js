@@ -1,4 +1,4 @@
-import { attachCanvasRefraction } from './campaign-refraction.js?v=live-glass';
+import { attachCanvasRefraction } from './campaign-refraction.js?v=clear-rim';
 
 const vertexSource = `
   attribute vec2 position;
@@ -6,7 +6,11 @@ const vertexSource = `
 `;
 
 const fragmentSource = `
-  precision mediump float;
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
   uniform sampler2D strip;
   uniform vec2 size;
   uniform float density;
@@ -108,23 +112,125 @@ function createLens(canvas) {
   };
 }
 
-function prepareCapture(_document, copy) {
-  for (const image of copy.querySelectorAll('img')) {
-    const style = image.ownerDocument.defaultView.getComputedStyle(image);
-    if (style.objectFit !== 'cover') continue;
-    const cover = image.ownerDocument.createElement('div');
-    cover.className = image.className;
-    Object.assign(cover.style, {
-      width: style.width,
-      height: style.height,
-      display: 'block',
-      backgroundImage: `url("${encodeURI(image.currentSrc || image.src)}")`,
-      backgroundPosition: style.objectPosition,
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-    });
-    image.replaceWith(cover);
+function traceBox(context, x, y, width, height, radius) {
+  context.beginPath();
+  if (context.roundRect && radius) context.roundRect(x, y, width, height, radius);
+  else context.rect(x, y, width, height);
+}
+
+function textLines(node, range) {
+  const text = node.textContent;
+  range.selectNodeContents(node);
+  const boxes = range.getClientRects();
+  if (boxes.length === 1) return [{ text, box: boxes[0] }];
+
+  const lines = [];
+  let start = 0;
+  let previousTop;
+  for (let end = 1; end <= text.length; end++) {
+    range.setStart(node, end - 1);
+    range.setEnd(node, end);
+    const top = range.getBoundingClientRect().top;
+    if (previousTop !== undefined && Math.abs(top - previousTop) > 1) {
+      range.setStart(node, start);
+      range.setEnd(node, end - 1);
+      lines.push({ text: text.slice(start, end - 1), box: range.getBoundingClientRect() });
+      start = end - 1;
+    }
+    previousTop = top;
   }
+  range.setStart(node, start);
+  range.setEnd(node, text.length);
+  lines.push({ text: text.slice(start), box: range.getBoundingClientRect() });
+  return lines;
+}
+
+function paintText(context, section, root) {
+  const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!node.textContent.trim() || node.parentElement.closest('[hidden]')) continue;
+    const style = getComputedStyle(node.parentElement);
+    if (style.visibility !== 'visible') continue;
+    context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    context.fillStyle = style.color;
+    if ('letterSpacing' in context) {
+      context.letterSpacing = style.letterSpacing === 'normal' ? '0px' : style.letterSpacing;
+    }
+
+    for (const { text, box } of textLines(node, range)) {
+      if (!box.width || !box.height || !text.trim()) continue;
+      const label = style.textTransform === 'uppercase' ? text.toLocaleUpperCase('de') : text;
+      const metrics = context.measureText(label);
+      const ascent = metrics.fontBoundingBoxAscent ?? parseFloat(style.fontSize) * 0.8;
+      const descent = metrics.fontBoundingBoxDescent ?? parseFloat(style.fontSize) * 0.2;
+      const baseline = (box.height + ascent - descent) / 2;
+      context.fillText(label, box.left - root.left, box.top - root.top + baseline, box.width);
+    }
+  }
+}
+
+function paintControls(context, section, root) {
+  for (const element of section.querySelectorAll('.filters, .filters button, .action, .hero-editorial')) {
+    const box = element.getBoundingClientRect();
+    if (!box.width || !box.height) continue;
+    const style = getComputedStyle(element);
+    traceBox(context, box.left - root.left, box.top - root.top, box.width, box.height,
+      Math.min(box.height / 2, parseFloat(style.borderTopLeftRadius) || 0));
+    context.fillStyle = style.backgroundColor;
+    context.fill();
+    const border = parseFloat(style.borderTopWidth);
+    if (border > 0) {
+      context.lineWidth = border;
+      context.strokeStyle = style.borderTopColor;
+      context.stroke();
+    }
+  }
+}
+
+function captureSection(section, photos, density) {
+  const bounds = section.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return;
+  const canvas = document.createElement('canvas');
+  const scale = Math.min(density, Math.sqrt(3000000 / (bounds.width * bounds.height)));
+  canvas.width = Math.ceil(bounds.width * scale);
+  canvas.height = Math.ceil(bounds.height * scale);
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  context.scale(scale, scale);
+  const style = getComputedStyle(section);
+  context.fillStyle = getComputedStyle(document.body).backgroundColor;
+  context.fillRect(0, 0, bounds.width, bounds.height);
+  traceBox(context, 0, 0, bounds.width, bounds.height, parseFloat(style.borderTopLeftRadius));
+  context.clip();
+  context.fillStyle = style.backgroundColor;
+  context.fill();
+
+  const sectionTop = bounds.top + window.scrollY;
+  for (const photo of photos) {
+    context.save();
+    const radius = parseFloat(getComputedStyle(photo.image.parentElement).borderTopLeftRadius);
+    traceBox(context, photo.left - bounds.left, photo.top - sectionTop, photo.width, photo.height, radius);
+    context.clip();
+    context.drawImage(photo.image, photo.x - bounds.left, photo.y - sectionTop, photo.drawWidth, photo.drawHeight);
+    context.restore();
+  }
+
+  if (section.classList.contains('hero')) {
+    const width = bounds.width;
+    const height = bounds.height;
+    const mobile = window.matchMedia('(max-width: 780px)').matches;
+    const scrim = mobile ? context.createLinearGradient(0, 0, 0, height) :
+      context.createLinearGradient(0, 0, width, 0);
+    const stops = mobile ? [[0.2, '#211a1610'], [0.49, '#211a1660'], [1, '#211a16e6']] :
+      [[0, '#1b1713c9'], [0.36, '#221b1580'], [0.59, '#231c1720'], [0.78, '#231c1700']];
+    for (const [offset, color] of stops) scrim.addColorStop(offset, color);
+    context.fillStyle = scrim;
+    context.fillRect(0, 0, width, height);
+  }
+  paintControls(context, section, bounds);
+  paintText(context, section, bounds);
+  return canvas;
 }
 
 export function attachSceneRefraction(bar, rimDisplacement) {
@@ -148,7 +254,6 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   let captureTimer;
   let lastScroll = -Infinity;
   let fallbackActive = false;
-  const captureLibrary = import('./html2canvas.min.js').then(() => globalThis.html2canvas);
 
   function measure() {
     const scroll = window.scrollY;
@@ -191,30 +296,15 @@ export function attachSceneRefraction(bar, rimDisplacement) {
     if (!section) return;
     const entry = {};
     snapshots.set(section, entry);
-    const { width, height } = positions[sections.indexOf(section)];
     capturing = true;
-    captureLibrary
-      .then(render => Promise.resolve(document.fonts?.ready).then(() => render(section, {
-        backgroundColor: null,
-        scale: Math.min(2, window.devicePixelRatio || 1, Math.sqrt(3000000 / (width * height))),
-        scrollX: 0,
-        scrollY: 0,
-        logging: false,
-        onclone(document, copy) {
-          if (section.classList.contains('hero')) copy.style.minHeight = height + 'px';
-          prepareCapture(document, copy);
-        },
-      })))
-      .then(bitmap => {
-        if (snapshots.get(section) !== entry || fallbackActive) return;
-        if (lens.prepare(bitmap)) entry.bitmap = bitmap;
-      })
-      .catch(() => { entry.failed = true; })
-      .finally(() => {
-        capturing = false;
-        schedulePaint();
-        if (snapshots.size < sections.length) queueCapture();
-      });
+    try {
+      const bitmap = captureSection(section, photoPositions[sections.indexOf(section)], 2);
+      if (bitmap && lens.prepare(bitmap)) entry.bitmap = bitmap;
+    } finally {
+      capturing = false;
+      schedulePaint();
+      if (snapshots.size < sections.length) queueCapture();
+    }
   }
 
   function queueCapture() {
@@ -293,7 +383,10 @@ export function attachSceneRefraction(bar, rimDisplacement) {
   for (const image of photos.flat()) {
     const prepareImage = () => {
       if (image.naturalWidth && !fallbackActive) lens.prepare(image);
+      const owner = sections.find(section => section.contains(image));
+      if (owner) snapshots.delete(owner);
       refreshLayout();
+      queueCapture();
     };
     image.addEventListener('load', prepareImage);
     if (image.complete) prepareImage();
@@ -306,6 +399,7 @@ export function attachSceneRefraction(bar, rimDisplacement) {
       queueCapture();
     }).observe(collection, { subtree: true, attributeFilter: ['hidden'] });
   }
+  document.fonts?.ready.then(rebuildSnapshots);
   canvas.addEventListener('webglcontextlost', event => {
     event.preventDefault();
     fallbackActive = true;
