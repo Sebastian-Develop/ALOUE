@@ -52,7 +52,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-color: #fff9;
   border-radius: var(--lg-radius);
   background-color: #f1ebdf;
-  box-shadow: var(--lg-shadow), inset 0 1px 1px #fff9;
+  box-shadow: var(--lg-shadow), inset 0 1px 2px #fff9, inset 0 -2px 4px #2d231b22;
 }
 .masthead.is-scrolled .bar.liquid-glass {
   background-color: transparent;
@@ -71,9 +71,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   padding: 2px;
   box-shadow: none;
   background:
-    radial-gradient(ellipse at 94% -30%, #fff 0%, #fff0 39%),
-    radial-gradient(ellipse at 6% 120%, #fffffff0 0%, #fff0 32%),
-    linear-gradient(180deg, #fff8, #fff0 45%, #38291945 58%, #fff7);
+    radial-gradient(ellipse 8rem 120% at 100% 0%, #fff 0%, #fffc 30%, #fff0 85%),
+    radial-gradient(ellipse 8rem 120% at 0% 100%, #fcfffffa 0%, #fff9 30%, #fff0 85%),
+    linear-gradient(180deg, #fffc, #fff2 32%, #473b302e 60%, #fff8);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   mix-blend-mode: normal;

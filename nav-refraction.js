@@ -2,7 +2,7 @@ import { injectLiquidGlassFilter } from './inject-filter.js';
 
 const svgNamespace = 'http://www.w3.org/2000/svg';
 const filterId = 'aloue-nav-refraction';
-const filterScale = 64;
+const filterScale = 76;
 
 function setAttributes(node, attributes) {
   for (const [name, value] of Object.entries(attributes)) {
@@ -15,7 +15,7 @@ function setAttributes(node, attributes) {
 function drawDisplacementMap(context, width, height) {
   const image = context.createImageData(width, height);
   const radius = height / 2;
-  const bevel = Math.min(19, radius);
+  const bevel = Math.min(21, radius);
   const { data } = image;
 
   for (let y = 0; y < height; y++) {
@@ -30,7 +30,10 @@ function drawDisplacementMap(context, width, height) {
 
       if (depth >= -1 && depth < bevel && distance > 0) {
         const slope = 1 - Math.max(0, depth) / bevel;
-        bend = -0.44 * slope ** 2 / distance;
+        // Curved ends catch a little more light than the straight edges.
+        const curvature = Math.abs(dx) / distance;
+        const strength = 0.43 + 0.06 * curvature;
+        bend = -strength * slope ** 2 / distance;
       }
       data[pixel] = 128 + 255 * dx * bend;
       data[pixel + 1] = 128 + 255 * dy * bend;
