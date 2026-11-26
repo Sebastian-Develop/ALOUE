@@ -2,14 +2,14 @@
 {% assign collection = shop.collections | where: 'handle', page.collection_handle | first %}
 {% assign products = shop.products %}
 {% unless collection.handle == 'menswear' %}
-  {% assign products = products | where: 'collection', collection.handle %}
+  {% assign products = products | where_exp: 'product', 'product.collections contains collection.handle' %}
 {% endunless %}
 {% assign shop_title = collection.title | append: ' | ALOUÉ' %}
 {% assign shop_description = collection.description %}
 {% include_relative _shop-head.html %}
 {% include_relative _shop-header.html %}
   <main id="hauptinhalt" class="category-main" tabindex="-1">
-    <section class="collection category-page container" aria-labelledby="collection-title">
+    <section class="collection category-page container{% if collection.handle == 'menswear' %} category-page--overview{% endif %}" aria-labelledby="collection-title">
       <nav class="collection-breadcrumb" aria-label="Brotkrümelnavigation">
         <a href="{{ '/' | relative_url }}">Startseite</a>
         <span aria-hidden="true">/</span>
@@ -22,8 +22,9 @@
       <h1 id="collection-title">{{ collection.title | escape }}</h1>
       {% if products.size > 0 %}
       <p class="collection-count">{{ products.size }} {% if products.size == 1 %}Stück{% else %}Stücke{% endif %}</p>
+      {% unless collection.handle == 'menswear' %}
       {% include_relative _shop-products.html %}
-      <p class="collection-note">Bilder, Produkte und Preise sind Beispiele für die Shop-Vorschau.</p>
+      {% endunless %}
       {% else %}
       <div class="collection-empty">
         <p>In dieser Kategorie sind noch keine Stücke in der Vorschau.</p>
@@ -31,5 +32,18 @@
       </div>
       {% endif %}
     </section>
+    {% if collection.handle == 'menswear' %}
+    {% assign groups = 'jacken,wendewesten,t-shirts-longsleeves,hosen-shorts' | split: ',' %}
+    {% for group_handle in groups %}
+    {% assign group = shop.collections | where: 'handle', group_handle | first %}
+    {% assign products = shop.products | where_exp: 'product', 'product.collections contains group_handle' %}
+    {% if products.size > 0 %}
+    <section class="container catalogue-group" aria-labelledby="{{ group_handle }}-title">
+      <h2 id="{{ group_handle }}-title"><a href="{{ group_handle | prepend: '/collections/' | append: '/' | relative_url }}">{{ group.title | escape }}</a></h2>
+      {% include_relative _shop-products.html %}
+    </section>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
   </main>
 {% include_relative _shop-end.html %}

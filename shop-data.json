@@ -61,37 +61,559 @@ collections:
     title: Jacken
     description: Jacken und Overshirts aus der ALOUÉ-Kollektion.
 products:
-  - id: overshirt
-    collection: jacken
-    name: Overshirt
-    price: 11900
-    tone: Anthrazit
-    swatch: '#383635'
-    image: overshirt.jpg
-    alt: Overshirt in Anthrazit
-  - id: pulli
-    collection: strick-wolle
-    name: Feinstrick-Pullover
-    price: 8900
-    tone: Ecru
-    swatch: '#dcd1b9'
-    image: knit.jpg
-    alt: Feinstrick-Pullover in Ecru
-  - id: hose
-    collection: hosen-shorts
-    name: Bundfaltenhose
-    price: 10900
-    tone: Taupe
-    swatch: '#74675a'
-    image: trousers.jpg
-    alt: Bundfaltenhose in Taupe
-  - id: polo
-    collection: strick-wolle
-    name: Strickpolo
-    price: 7900
-    tone: Schwarz
-    swatch: '#21201d'
-    image: polo.jpg
-    alt: Strickpolo in Schwarz
+  - id: "wool-blend-jacket-dark-blue"
+    collections: ["jacken"]
+    name: "Jacke in Wolloptik"
+    tone: "Dunkelblau"
+    swatches: ["#242e42"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-wool-blend-jacket-dark-blue.jpg"
+    alt: "Jacke in Wolloptik in Dunkelblau"
+    description: "Eine gerade geschnittene Jacke mit strukturierter Oberfläche in Wolloptik. Gerippte Abschlüsse an Ärmeln und Saum geben ihr Form. Vorn hat sie einen Metallreißverschluss und zwei geknöpfte Klappentaschen."
+    material: "90 % Polyester, 10 % Viskose"
+    fit: "Regular Fit"
+  - id: "wool-blend-jacket-espresso"
+    collections: ["jacken"]
+    name: "Jacke in Wolloptik"
+    tone: "Espresso"
+    swatches: ["#47362f"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-wool-blend-jacket-espresso.jpg"
+    alt: "Jacke in Wolloptik in Espresso"
+    description: "Eine gerade geschnittene Jacke mit strukturierter Oberfläche in Wolloptik. Gerippte Abschlüsse an Ärmeln und Saum geben ihr Form. Vorn hat sie einen Metallreißverschluss und zwei geknöpfte Klappentaschen."
+    material: "90 % Polyester, 10 % Viskose"
+    fit: "Regular Fit"
+    featured: true
+  - id: "wool-blend-jacket-beige"
+    collections: ["jacken"]
+    name: "Jacke in Wolloptik"
+    tone: "Beige"
+    swatches: ["#bbab91"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-wool-blend-jacket-beige.jpg"
+    alt: "Jacke in Wolloptik in Beige"
+    description: "Eine gerade geschnittene Jacke mit strukturierter Oberfläche in Wolloptik. Gerippte Abschlüsse an Ärmeln und Saum geben ihr Form. Vorn hat sie einen Metallreißverschluss und zwei geknöpfte Klappentaschen."
+    material: "90 % Polyester, 10 % Viskose"
+    fit: "Regular Fit"
+  - id: "men-gilet-reversible-falcon-espresso"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Falcon / Espresso"
+    swatches: ["#766b60", "#47362f"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-falcon-espresso.jpg"
+    alt: "Wendeweste aus Travelstoff in Falcon / Espresso"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-falcon-espresso-ansicht-2.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-3.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-4.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-5.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-6.jpg"]
+    featured: true
+  - id: "men-gilet-reversible-teal-blue-falcon"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Teal Blue / Falcon"
+    swatches: ["#446278", "#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-teal-blue-falcon.jpg"
+    alt: "Wendeweste aus Travelstoff in Teal Blue / Falcon"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-teal-blue-falcon-ansicht-2.jpg", "produkt-men-gilet-reversible-teal-blue-falcon-ansicht-3.jpg", "produkt-men-gilet-reversible-teal-blue-falcon-ansicht-4.jpg", "produkt-men-gilet-reversible-teal-blue-falcon-ansicht-5.jpg"]
+  - id: "men-gilet-reversible-black-grey"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Schwarz / Grau"
+    swatches: ["#28272a", "#888583"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-black-grey.jpg"
+    alt: "Wendeweste aus Travelstoff in Schwarz / Grau"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-black-grey-ansicht-2.jpg", "produkt-men-gilet-reversible-black-grey-ansicht-3.jpg", "produkt-men-gilet-reversible-black-grey-ansicht-4.jpg"]
+  - id: "men-gilet-reversible-cloud-blue-kit"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Cloud Blue / Kit"
+    swatches: ["#95a7b8", "#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-cloud-blue-kit.jpg"
+    alt: "Wendeweste aus Travelstoff in Cloud Blue / Kit"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-cloud-blue-kit-ansicht-2.jpg", "produkt-men-gilet-reversible-cloud-blue-kit-ansicht-3.jpg", "produkt-men-gilet-reversible-cloud-blue-kit-ansicht-4.jpg"]
+  - id: "men-gilet-reversible-olive-kit"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Oliv / Kit"
+    swatches: ["#645f43", "#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-olive-kit.jpg"
+    alt: "Wendeweste aus Travelstoff in Oliv / Kit"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-olive-kit-ansicht-2.jpg", "produkt-men-gilet-reversible-olive-kit-ansicht-3.jpg", "produkt-men-gilet-reversible-olive-kit-ansicht-4.jpg"]
+  - id: "men-gilet-reversible-burgundy-falcon"
+    collections: ["wendewesten"]
+    name: "Wendeweste aus Travelstoff"
+    tone: "Bordeaux / Falcon"
+    swatches: ["#694049", "#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-gilet-reversible-burgundy-falcon.jpg"
+    alt: "Wendeweste aus Travelstoff in Bordeaux / Falcon"
+    description: "Eine Weste in zwei Farben, die sich beidseitig tragen lässt. Der elastische Travelstoff ist atmungsaktiv, schnelltrocknend und knitterarm. Zwei Einschubtaschen und ein Metallreißverschluss ergänzen den geraden Schnitt."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-gilet-reversible-burgundy-falcon-ansicht-2.jpg", "produkt-men-gilet-reversible-burgundy-falcon-ansicht-3.jpg", "produkt-men-gilet-reversible-burgundy-falcon-ansicht-4.jpg"]
+  - id: "men-jacket-reversible-cloud-blue-kit"
+    collections: ["wendejacken", "jacken"]
+    name: "Wendejacke aus Travelstoff"
+    tone: "Cloud Blue / Kit"
+    swatches: ["#95a7b8", "#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-jacket-reversible-cloud-blue-kit.jpg"
+    alt: "Wendejacke aus Travelstoff in Cloud Blue / Kit"
+    description: "Zwei tragbare Farbseiten und elastische Ärmelabschlüsse machen diese Jacke vielseitig. Der atmungsaktive Stretchstoff trocknet schnell und knittert wenig. Vorn befinden sich zwei Einschubtaschen und ein Metallreißverschluss."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-jacket-reversible-cloud-blue-kit-ansicht-2.jpg", "produkt-men-jacket-reversible-cloud-blue-kit-ansicht-3.jpg", "produkt-men-jacket-reversible-cloud-blue-kit-ansicht-4.jpg", "produkt-men-jacket-reversible-cloud-blue-kit-ansicht-5.jpg"]
+  - id: "men-jacket-reversible-falcon-espresso"
+    collections: ["wendejacken", "jacken"]
+    name: "Wendejacke aus Travelstoff"
+    tone: "Falcon / Espresso"
+    swatches: ["#766b60", "#47362f"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-jacket-reversible-falcon-espresso.jpg"
+    alt: "Wendejacke aus Travelstoff in Falcon / Espresso"
+    description: "Zwei tragbare Farbseiten und elastische Ärmelabschlüsse machen diese Jacke vielseitig. Der atmungsaktive Stretchstoff trocknet schnell und knittert wenig. Vorn befinden sich zwei Einschubtaschen und ein Metallreißverschluss."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-jacket-reversible-falcon-espresso-ansicht-2.jpg", "produkt-men-jacket-reversible-falcon-espresso-ansicht-3.jpg", "produkt-men-jacket-reversible-falcon-espresso-ansicht-4.jpg", "produkt-men-jacket-reversible-falcon-espresso-ansicht-5.jpg"]
+  - id: "men-jacket-reversible-beige-kit"
+    collections: ["wendejacken", "jacken"]
+    name: "Wendejacke aus Travelstoff"
+    tone: "Beige / Kit"
+    swatches: ["#bbab91", "#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-jacket-reversible-beige-kit.jpg"
+    alt: "Wendejacke aus Travelstoff in Beige / Kit"
+    description: "Zwei tragbare Farbseiten und elastische Ärmelabschlüsse machen diese Jacke vielseitig. Der atmungsaktive Stretchstoff trocknet schnell und knittert wenig. Vorn befinden sich zwei Einschubtaschen und ein Metallreißverschluss."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-jacket-reversible-beige-kit-ansicht-2.jpg", "produkt-men-jacket-reversible-beige-kit-ansicht-3.jpg", "produkt-men-jacket-reversible-beige-kit-ansicht-4.jpg", "produkt-men-jacket-reversible-beige-kit-ansicht-5.jpg", "produkt-men-jacket-reversible-beige-kit-ansicht-6.jpg"]
+  - id: "men-jacket-reversible-olive-kit"
+    collections: ["wendejacken", "jacken"]
+    name: "Wendejacke aus Travelstoff"
+    tone: "Oliv / Kit"
+    swatches: ["#645f43", "#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-jacket-reversible-olive-kit.jpg"
+    alt: "Wendejacke aus Travelstoff in Oliv / Kit"
+    description: "Zwei tragbare Farbseiten und elastische Ärmelabschlüsse machen diese Jacke vielseitig. Der atmungsaktive Stretchstoff trocknet schnell und knittert wenig. Vorn befinden sich zwei Einschubtaschen und ein Metallreißverschluss."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-jacket-reversible-olive-kit-ansicht-2.jpg", "produkt-men-jacket-reversible-olive-kit-ansicht-3.jpg", "produkt-men-jacket-reversible-olive-kit-ansicht-4.jpg"]
+  - id: "men-jacket-reversible-teal-blue-falcon"
+    collections: ["wendejacken", "jacken"]
+    name: "Wendejacke aus Travelstoff"
+    tone: "Teal Blue / Falcon"
+    swatches: ["#446278", "#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-jacket-reversible-teal-blue-falcon.jpg"
+    alt: "Wendejacke aus Travelstoff in Teal Blue / Falcon"
+    description: "Zwei tragbare Farbseiten und elastische Ärmelabschlüsse machen diese Jacke vielseitig. Der atmungsaktive Stretchstoff trocknet schnell und knittert wenig. Vorn befinden sich zwei Einschubtaschen und ein Metallreißverschluss."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    gallery: ["produkt-men-jacket-reversible-teal-blue-falcon-ansicht-2.jpg", "produkt-men-jacket-reversible-teal-blue-falcon-ansicht-3.jpg", "produkt-men-jacket-reversible-teal-blue-falcon-ansicht-4.jpg", "produkt-men-jacket-reversible-teal-blue-falcon-ansicht-5.jpg"]
+  - id: "men-parka-jacket-dark-blue"
+    collections: ["kapuzenjacken", "jacken"]
+    name: "Parka mit versteckter Kapuze"
+    tone: "Dunkelblau"
+    swatches: ["#242e42"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-men-parka-jacket-dark-blue.jpg"
+    alt: "Parka mit versteckter Kapuze in Dunkelblau"
+    description: "Leichter Parka aus elastischem Stoff mit einer im Kragen verstauten Kapuze. Reißverschluss und Druckknöpfe schließen die Front. Vier aufgesetzte Taschen und eine Innentasche bieten Stauraum, Taille und Manschetten sind verstellbar."
+    material: "88 % Polyamid, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-parka-jacket-falcon"
+    collections: ["kapuzenjacken", "jacken"]
+    name: "Parka mit versteckter Kapuze"
+    tone: "Falcon"
+    swatches: ["#766b60"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-men-parka-jacket-falcon.jpg"
+    alt: "Parka mit versteckter Kapuze in Falcon"
+    description: "Leichter Parka aus elastischem Stoff mit einer im Kragen verstauten Kapuze. Reißverschluss und Druckknöpfe schließen die Front. Vier aufgesetzte Taschen und eine Innentasche bieten Stauraum, Taille und Manschetten sind verstellbar."
+    material: "88 % Polyamid, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-parka-jacket-black"
+    collections: ["kapuzenjacken", "jacken"]
+    name: "Parka mit versteckter Kapuze"
+    tone: "Schwarz"
+    swatches: ["#28272a"]
+    sizes: ["S", "M", "L", "XL", "XXL"]
+    image: "produkt-men-parka-jacket-black.jpg"
+    alt: "Parka mit versteckter Kapuze in Schwarz"
+    description: "Leichter Parka aus elastischem Stoff mit einer im Kragen verstauten Kapuze. Reißverschluss und Druckknöpfe schließen die Front. Vier aufgesetzte Taschen und eine Innentasche bieten Stauraum, Taille und Manschetten sind verstellbar."
+    material: "88 % Polyamid, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-beige"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Beige"
+    swatches: ["#bbab91"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-beige.jpg"
+    alt: "Lustre Cotton Longsleeve in Beige"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-kit"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Kit"
+    swatches: ["#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-kit.jpg"
+    alt: "Lustre Cotton Longsleeve in Kit"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-falcon"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Falcon"
+    swatches: ["#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-falcon.jpg"
+    alt: "Lustre Cotton Longsleeve in Falcon"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-olive"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Oliv"
+    swatches: ["#645f43"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-olive.jpg"
+    alt: "Lustre Cotton Longsleeve in Oliv"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-teal-blue"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Teal Blue"
+    swatches: ["#446278"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-teal-blue.jpg"
+    alt: "Lustre Cotton Longsleeve in Teal Blue"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-burgundy"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Bordeaux"
+    swatches: ["#694049"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-burgundy.jpg"
+    alt: "Lustre Cotton Longsleeve in Bordeaux"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-dark-grey"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Dunkelgrau"
+    swatches: ["#4e4d51"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-dark-grey.jpg"
+    alt: "Lustre Cotton Longsleeve in Dunkelgrau"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-espresso"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Espresso"
+    swatches: ["#47362f"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-espresso.jpg"
+    alt: "Lustre Cotton Longsleeve in Espresso"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-deep-depth"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Deep Depth"
+    swatches: ["#3f423e"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-deep-depth.jpg"
+    alt: "Lustre Cotton Longsleeve in Deep Depth"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-shirt-long-sleeves-black"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton Longsleeve"
+    tone: "Schwarz"
+    swatches: ["#28272a"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-shirt-long-sleeves-black.jpg"
+    alt: "Lustre Cotton Longsleeve in Schwarz"
+    description: "Langarmshirt aus weichem Baumwollstretch mit leichtem Glanz. Der Stoff ist atmungsaktiv und gibt bei Bewegung nach. Der gerade Schnitt lässt sich gut unter einer Jacke tragen."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-black"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Schwarz"
+    swatches: ["#28272a"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-black.jpg"
+    alt: "Lustre Cotton T-Shirt in Schwarz"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-deep-depth"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Deep Depth"
+    swatches: ["#3f423e"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-deep-depth.jpg"
+    alt: "Lustre Cotton T-Shirt in Deep Depth"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-espresso"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Espresso"
+    swatches: ["#47362f"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-espresso.jpg"
+    alt: "Lustre Cotton T-Shirt in Espresso"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-dark-grey"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Dunkelgrau"
+    swatches: ["#4e4d51"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-dark-grey.jpg"
+    alt: "Lustre Cotton T-Shirt in Dunkelgrau"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-burgundy"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Bordeaux"
+    swatches: ["#694049"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-burgundy.jpg"
+    alt: "Lustre Cotton T-Shirt in Bordeaux"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-teal-blue"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Teal Blue"
+    swatches: ["#446278"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-teal-blue.jpg"
+    alt: "Lustre Cotton T-Shirt in Teal Blue"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-olive"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Oliv"
+    swatches: ["#645f43"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-olive.jpg"
+    alt: "Lustre Cotton T-Shirt in Oliv"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-falcon"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Falcon"
+    swatches: ["#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-falcon.jpg"
+    alt: "Lustre Cotton T-Shirt in Falcon"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-kit"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Kit"
+    swatches: ["#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-kit.jpg"
+    alt: "Lustre Cotton T-Shirt in Kit"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+    featured: true
+  - id: "men-cotton-t-shirt-beige"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Beige"
+    swatches: ["#bbab91"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-beige.jpg"
+    alt: "Lustre Cotton T-Shirt in Beige"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-cotton-t-shirt-cloud-blue"
+    collections: ["t-shirts-longsleeves"]
+    name: "Lustre Cotton T-Shirt"
+    tone: "Cloud Blue"
+    swatches: ["#95a7b8"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-cotton-t-shirt-cloud-blue.jpg"
+    alt: "Lustre Cotton T-Shirt in Cloud Blue"
+    description: "Kurzarmshirt mit glatter, leicht glänzender Oberfläche. Die Baumwollmischung fühlt sich weich an, ist atmungsaktiv und nimmt durch den Stretchanteil Bewegungen mit. Gerade geschnitten."
+    material: "88 % Baumwolle, 12 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-espresso"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Espresso"
+    swatches: ["#47362f"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-espresso.jpg"
+    alt: "Stretch-Travelhose L32 in Espresso"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-falcon"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Falcon"
+    swatches: ["#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-falcon.jpg"
+    alt: "Stretch-Travelhose L32 in Falcon"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-dark-grey"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Dunkelgrau"
+    swatches: ["#4e4d51"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-dark-grey.jpg"
+    alt: "Stretch-Travelhose L32 in Dunkelgrau"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+    featured: true
+  - id: "tapered-chino-teal-blue"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Teal Blue"
+    swatches: ["#446278"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-tapered-chino-teal-blue.jpg"
+    alt: "Stretch-Travelhose L32 in Teal Blue"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-black"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Schwarz"
+    swatches: ["#28272a"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-black.jpg"
+    alt: "Stretch-Travelhose L32 in Schwarz"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-cloud-blue"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Cloud Blue"
+    swatches: ["#95a7b8"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-cloud-blue.jpg"
+    alt: "Stretch-Travelhose L32 in Cloud Blue"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-olive"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Oliv"
+    swatches: ["#645f43"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-olive.jpg"
+    alt: "Stretch-Travelhose L32 in Oliv"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-kit"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Kit"
+    swatches: ["#dbd2c0"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-kit.jpg"
+    alt: "Stretch-Travelhose L32 in Kit"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-burgundy"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Bordeaux"
+    swatches: ["#694049"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-burgundy.jpg"
+    alt: "Stretch-Travelhose L32 in Bordeaux"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l32-beige"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L32"
+    tone: "Beige"
+    swatches: ["#bbab91"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l32-beige.jpg"
+    alt: "Stretch-Travelhose L32 in Beige"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L32."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
+  - id: "men-trousers-l34-falcon"
+    collections: ["hosen-shorts"]
+    name: "Stretch-Travelhose L34"
+    tone: "Falcon"
+    swatches: ["#766b60"]
+    sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"]
+    image: "produkt-men-trousers-l34-falcon.jpg"
+    alt: "Stretch-Travelhose L34 in Falcon"
+    description: "Gerade geschnittene Hose aus atmungsaktivem Stretchstoff, der schnell trocknet und wenig knittert. Mit elastischem Bund, Gürtelschlaufen, schrägen Vordertaschen und geknöpften Paspeltaschen hinten. Geschlossen wird sie mit Reißverschluss und Knopf. Beinlänge L34."
+    material: "84 % Polyamid, 16 % Elasthan"
+    fit: "Regular Fit"
 ---
 {{ page.products | jsonify }}

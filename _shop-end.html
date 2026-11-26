@@ -30,12 +30,21 @@
   <dialog id="product" aria-labelledby="product-title">
     <div class="dialog-heading"><h2 id="product-title"></h2><button type="button" class="icon-button glass" data-close aria-label="Produkt schließen"><svg><use href="#close-icon"/></svg></button></div>
     <img class="detail-image" alt="">
+    <div class="detail-gallery" aria-label="Produktbilder" hidden>
+      <button type="button" class="icon-button glass" data-photo-step="-1" aria-label="Vorheriges Produktbild">‹</button>
+      <span data-photo-count role="status"></span>
+      <button type="button" class="icon-button glass" data-photo-step="1" aria-label="Nächstes Produktbild">›</button>
+    </div>
     <p class="detail-summary"></p>
+    <p class="detail-description"></p>
+    <dl class="detail-facts">
+      <div><dt>Material</dt><dd data-product-material></dd></div>
+      <div><dt>Passform</dt><dd data-product-fit></dd></div>
+    </dl>
     <form id="product-form">
       <label for="size">Größe</label>
       <select id="size" required>
         <option value="">Größe wählen</option>
-        <option>S</option><option>M</option><option>L</option><option>XL</option>
       </select>
       <button class="action dark" type="submit">In die Tasche legen</button>
     </form>
@@ -44,7 +53,7 @@
   <dialog id="bag" aria-labelledby="bag-title">
     <div class="dialog-heading"><h2 id="bag-title">Deine Tasche</h2><button type="button" class="icon-button glass" data-close aria-label="Tasche schließen"><svg><use href="#close-icon"/></svg></button></div>
     <div id="bag-items" aria-live="polite"></div>
-    <div class="bag-footer" hidden><div><span>Zwischensumme</span><strong data-subtotal></strong></div><p>Diese Vorschau nimmt keine Bestellungen an.</p></div>
+    <div class="bag-footer" hidden><div class="bag-subtotal" hidden><span>Zwischensumme</span><strong data-subtotal></strong></div><p>Diese Vorschau nimmt keine Bestellungen an.</p></div>
   </dialog>
   <script id="shop-catalog" type="application/json">{{ shop.products | jsonify | replace: '<', '\u003c' }}</script>
 </body>
