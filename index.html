@@ -57,18 +57,13 @@ layout: null
       <div class="editorial-copy">
         <p class="eyebrow">Editorial / Kollektion 01</p>
         <h2 id="editorial-title">Die Looks.</h2>
-        <p>Espresso mit Dunkelgrau. Beige mit Kit. Entdecke die Jacken aus der Kampagne.</p>
-        {% assign campaign_jackets = 'wool-blend-jacket-espresso,men-jacket-reversible-beige-kit' | split: ',' %}
-        <ul class="editorial-products" role="list">
-          {% for id in campaign_jackets %}
-          {% assign jacket = shop.products | where: 'id', id | first %}
-          {% if jacket %}
-          <li><button type="button" data-product="{{ jacket.id | escape }}"><span>{{ jacket.name | escape }}<small>{{ jacket.tone | escape }}</small></span><span aria-hidden="true">→</span></button></li>
-          {% endif %}
-          {% endfor %}
-        </ul>
+        <p>Espresso mit Dunkelgrau oder Beige mit Kit. Entdecke die Looks aus der Kampagne und kombiniere deine eigenen.</p>
+        <a class="action dark" href="#styling">Look zusammenstellen <span aria-hidden="true">↓</span></a>
       </div>
     </section>
 
+{% include_relative _shop-outfits.html %}
+
   </main>
+  <script type="module" src="{{ '/outfit.js' | relative_url }}?v=1"></script>
 {% include_relative _shop-end.html %}

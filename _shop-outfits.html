@@ -1,0 +1,60 @@
+    <section class="outfit-studio container" id="styling" data-outfit aria-labelledby="outfit-title">
+      <header class="outfit-heading">
+        <h2 id="outfit-title">Dein Look.</h2>
+        <p>Wähle ein Model, probiere einen der Looks oder stelle aus dem gesamten Sortiment dein Outfit zusammen.</p>
+      </header>
+
+      <div class="outfit-workspace">
+        <div class="outfit-preview">
+          <div class="outfit-models" role="group" aria-label="Model wählen">
+            <button type="button" data-outfit-model="espresso" data-name="Model 1" data-src="{{ '/style-model-espresso.jpg' | relative_url }}" aria-pressed="true">Model 1</button>
+            <button type="button" data-outfit-model="kit" data-name="Model 2" data-src="{{ '/style-model-kit.jpg' | relative_url }}" aria-pressed="false">Model 2</button>
+          </div>
+          <figure class="outfit-stage">
+            <div class="outfit-portrait">
+              <img data-outfit-poster src="{{ '/style-model-espresso.jpg' | relative_url }}" width="800" height="1200" alt="Model 1 aus der ALOUÉ-Kampagne" loading="lazy" decoding="async">
+              <canvas data-outfit-canvas hidden></canvas>
+            </div>
+            <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke anzeigen</button>
+            <figcaption>Digitale Styling-Vorschau</figcaption>
+          </figure>
+        </div>
+
+        <div class="outfit-controls">
+          <div class="outfit-inspiration">
+            <h3>Look-Vorschläge</h3>
+            <div class="outfit-pills outfit-presets" role="group" aria-label="Vorgeschlagenen Look wählen">
+              <button type="button" data-outfit-preset="espresso" aria-pressed="true">Espresso</button>
+              <button type="button" data-outfit-preset="kit" aria-pressed="false">Sand</button>
+              <button type="button" data-outfit-preset="contrast" aria-pressed="false">Kontrast</button>
+            </div>
+          </div>
+
+          <div class="outfit-picker">
+            <h3>Stücke wählen</h3>
+            <div class="outfit-pills outfit-slots" role="group" aria-label="Kleidungsart wählen">
+              <button type="button" data-outfit-slot="jacket" aria-pressed="true" aria-controls="outfit-options">Jacken &amp; Westen</button>
+              <button type="button" data-outfit-slot="shirt" aria-pressed="false" aria-controls="outfit-options">Oberteile</button>
+              <button type="button" data-outfit-slot="trousers" aria-pressed="false" aria-controls="outfit-options">Hosen</button>
+            </div>
+            <div class="outfit-search-row">
+              <label class="visually-hidden" for="outfit-product-search">Stücke in der Auswahl suchen</label>
+              <input id="outfit-product-search" data-outfit-search type="search" placeholder="Name oder Farbe" autocomplete="off" aria-controls="outfit-options">
+              <span class="outfit-count" data-outfit-count aria-live="polite"></span>
+            </div>
+            <div class="outfit-options" id="outfit-options" data-outfit-list role="group" aria-label="Verfügbare Stücke"></div>
+          </div>
+
+          <div class="outfit-selection">
+            <div class="outfit-selection-heading">
+              <h3>Im Look</h3>
+              <button type="button" class="outfit-match" data-outfit-match>Passend kombinieren <span aria-hidden="true">↗</span></button>
+            </div>
+            <ul class="outfit-summary" data-outfit-summary role="list"></ul>
+          </div>
+
+          <p class="visually-hidden" data-outfit-feedback role="status"></p>
+          <noscript><p>Für die Outfit-Vorschau brauchst du JavaScript. <a href="{{ '/collections/menswear/' | relative_url }}">Zum Sortiment</a></p></noscript>
+        </div>
+      </div>
+    </section>

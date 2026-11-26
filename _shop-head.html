@@ -11,5 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/liquid-glass.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/store.css' | relative_url }}?v=shop-polish">
+  {% unless page.collection_handle %}<link rel="stylesheet" href="{{ '/outfit.css' | relative_url }}?v=1">{% endunless %}
   <script type="module" src="{{ '/store.js' | relative_url }}?v=shop-polish"></script>
 </head>
