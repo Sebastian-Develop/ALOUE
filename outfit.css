@@ -23,6 +23,7 @@
   margin: 0;
   color: var(--muted);
 }
+.outfit-close, .outfit-mobile-actions, .outfit-back.action { display: none; }
 .outfit-workspace {
   display: grid;
   grid-template-columns: minmax(0, min(44%, clamp(19rem, 55svh, 31rem))) minmax(0, 1fr);
@@ -201,25 +202,73 @@ button.outfit-selected-item:hover { text-decoration: underline; text-underline-o
 #outfit-photo canvas { display: block; width: 100%; max-height: calc(100dvh - 7rem); object-fit: contain; }
 
 @media (max-width: 790px) {
-  .outfit-workspace { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: .65rem; }
-  .outfit-preview { top: 4.65rem; }
-  .outfit-models { margin-bottom: .28rem; }
+  #styling:not(:target) { display: none; }
+  #styling { scroll-margin-top: max(5.5rem, calc(4.5rem + env(safe-area-inset-top, 0px))); }
+  #styling-open { scroll-margin-top: 5rem; }
+  .outfit-close {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 44px;
+    color: var(--muted);
+    font-size: .84rem;
+    font-weight: 600;
+  }
+  .outfit-close:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .outfit-heading, .outfit-workspace { max-width: 32rem; margin-inline: auto; }
+  .outfit-heading { align-items: center; gap: .35rem .65rem; }
+  .outfit-heading h2 { font-size: clamp(2.65rem, 10vw, 4rem); }
+  .outfit-heading p { font-size: .92rem; }
+  .outfit-workspace { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .outfit-preview { position: static; }
+  .outfit-stage { scroll-margin-top: 5.25rem; }
+  .outfit-portrait { border-radius: 12px; }
+  .outfit-models { margin: .6rem 0 .55rem; }
+  .outfit-view-actions { justify-content: space-between; }
+  .outfit-mobile-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .35rem;
+    margin-top: .65rem;
+  }
+  .outfit-mobile-actions button {
+    min-height: 46px;
+    padding: .4rem .25rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: none;
+    font-size: .84rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .outfit-mobile-actions [aria-expanded="true"] { border-color: var(--ink); background: var(--ink); color: #fffaf3; }
+  .outfit-controls {
+    display: none;
+    gap: .85rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fcfaf6;
+    scroll-margin-top: 5.25rem;
+  }
+  .outfit-controls:focus { outline: none; }
+  .outfit-studio[data-editor-panel] .outfit-controls { display: grid; }
+  .outfit-controls [data-outfit-panel] { display: none; }
+  [data-editor-panel="looks"] [data-outfit-panel="looks"],
+  [data-editor-panel="pieces"] [data-outfit-panel="pieces"],
+  [data-editor-panel="selection"] [data-outfit-panel="selection"] { display: block; }
+  .outfit-controls .outfit-picker { padding: 0; border: 0; }
+  .outfit-options { max-height: min(48svh, 23rem); }
+  .outfit-back.action { display: inline-flex; gap: .45rem; justify-self: start; }
+}
+@media (max-width: 760px) {
+  #outfit-photo { max-height: calc(var(--dialog-visible-height, 100dvh) - var(--dialog-top, .75rem) - var(--dialog-bottom, .75rem)); }
+  #outfit-photo canvas { max-height: calc(var(--dialog-visible-height, 100dvh) - 7rem); }
 }
 @media (max-width: 520px) {
-  .outfit-workspace { grid-template-columns: minmax(5.75rem, 32%) minmax(0, 1fr); gap: .45rem; }
-  .outfit-preview { top: 4.25rem; }
-  .outfit-portrait { border-radius: 7px; }
-  .outfit-models { grid-template-columns: 1fr; gap: .15rem; }
-  .outfit-models button { justify-content: start; padding-inline: .28rem; font-size: .77rem; }
-  .outfit-model-thumb { flex-basis: 23px; width: 23px; height: 23px; }
-  .outfit-stage figcaption { font-size: .65rem; }
-  .outfit-view-actions button { font-size: .73rem; }
-  .outfit-controls { gap: .9rem; padding-left: .3rem; }
+  .outfit-controls { padding: .8rem; }
   .outfit-pills { gap: .25rem; }
-  .outfit-pills button { min-height: 44px; padding-inline: .5rem; font-size: .77rem; }
-  .outfit-option { padding-inline: .25rem 1.35rem; gap: .38rem; }
-  .outfit-option[aria-pressed="true"]::after { inset-inline-end: .4rem; }
-  .outfit-option-image { flex-basis: 34px; width: 34px; height: 44px; }
+  .outfit-pills button { min-height: 44px; padding-inline: .64rem; font-size: .8rem; }
   .outfit-option-copy { overflow-wrap: anywhere; }
   .outfit-summary { grid-template-columns: 1fr; gap: .1rem; }
   .outfit-selected { display: grid; grid-template-columns: minmax(0, .65fr) minmax(0, 1.35fr); align-items: center; gap: .12rem .3rem; }

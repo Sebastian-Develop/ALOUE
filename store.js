@@ -43,6 +43,8 @@ const searchField = document.querySelector('#search-field');
 const searchStatus = document.querySelector('#search-status');
 const searchResults = document.querySelector('#search-results');
 const productDialog = document.querySelector('#product');
+const productClose = productDialog.querySelector('.detail-close');
+const productContent = productDialog.querySelector('.product-detail');
 const productForm = document.querySelector('#product-form');
 const productSize = productForm.querySelector('select');
 const detailImage = productDialog.querySelector('.detail-image');
@@ -184,10 +186,28 @@ function renderBag() {
 }
 renderBag();
 
+const dialogViewport = window.visualViewport;
+const narrowDialogViewport = window.matchMedia('(max-width: 760px)');
+
+function fitMobileDialog(dialog) {
+  if (!dialogViewport || !narrowDialogViewport.matches) return;
+  dialog.style.setProperty('--dialog-visible-top', `${Math.max(0, dialogViewport.offsetTop)}px`);
+  dialog.style.setProperty('--dialog-visible-height', `${dialogViewport.height}px`);
+}
+
+function fitOpenDialog() {
+  const dialog = document.querySelector('dialog[open]');
+  if (dialog) fitMobileDialog(dialog);
+}
+
+dialogViewport?.addEventListener('resize', fitOpenDialog, { passive: true });
+dialogViewport?.addEventListener('scroll', fitOpenDialog, { passive: true });
+
 function showDialog(dialog, trigger) {
   const previous = document.querySelector('dialog[open]');
   if (previous) previous.close();
   if (trigger) returnFocus = trigger;
+  fitMobileDialog(dialog);
   dialog.showModal();
 }
 
@@ -245,7 +265,9 @@ function showProduct(id, trigger) {
   );
   productForm.reset();
   showDialog(productDialog, trigger);
+  productContent.scrollTop = 0;
   productDialog.scrollTop = 0;
+  productClose.focus({ preventScroll: true });
 }
 
 const searchCategories = [

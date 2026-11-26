@@ -414,8 +414,52 @@ dialog input, dialog select { width: 100%; min-height: 44px; padding: .6rem .85r
 .bag-browse { margin-top: 1rem; }
 
 @media (max-width: 760px) {
-  #product { width: min(35rem, calc(100% - 1.5rem)); max-height: calc(100dvh - 1.5rem); }
-  .product-detail { grid-template-columns: 1fr; }
+  dialog {
+    --dialog-top: max(1rem, env(safe-area-inset-top, 0px));
+    --dialog-right: max(.75rem, env(safe-area-inset-right, 0px));
+    --dialog-bottom: max(.75rem, env(safe-area-inset-bottom, 0px));
+    --dialog-left: max(.75rem, env(safe-area-inset-left, 0px));
+    width: min(450px, calc(100% - var(--dialog-left) - var(--dialog-right)));
+    padding-block-start: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block-start: 4rem;
+  }
+  dialog, #product {
+    inset: calc(var(--dialog-visible-top, 0px) + var(--dialog-top)) var(--dialog-right) auto var(--dialog-left);
+    max-height: calc(100% - var(--dialog-top) - var(--dialog-bottom));
+    max-height: calc(var(--dialog-visible-height, 100dvh) - var(--dialog-top) - var(--dialog-bottom));
+    margin: 0 0 0 auto;
+  }
+  .dialog-heading {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    margin-bottom: .55rem;
+    padding-block: .65rem;
+    background: var(--paper);
+  }
+  .dialog-heading .icon-button { min-width: 44px; min-height: 44px; flex: 0 0 auto; }
+  #product {
+    width: min(35rem, calc(100% - var(--dialog-left) - var(--dialog-right)));
+    margin-inline: auto;
+    overflow: hidden;
+  }
+  #product[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+  .detail-toolbar {
+    position: relative;
+    height: auto;
+    align-items: center;
+    padding: .45rem .65rem;
+    background: #fff;
+  }
+  .detail-close.icon-button { margin-block-start: 0; }
+  .product-detail {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
   .detail-media { padding: .45rem .45rem .75rem; }
   .detail-image { height: min(44vh, 28rem); height: min(44dvh, 28rem); }
   .detail-copy { padding: 1.55rem clamp(1rem, 5vw, 2rem) 1.6rem; }

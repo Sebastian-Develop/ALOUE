@@ -1,6 +1,7 @@
-    <section class="outfit-studio container" id="styling" data-outfit aria-labelledby="outfit-title">
+    <section class="outfit-studio container" id="styling" data-outfit aria-labelledby="outfit-title" tabindex="-1">
       <header class="outfit-heading">
         <h2 id="outfit-title">Dein Look.</h2>
+        <a class="outfit-close" href="#styling-open">Studio schließen <span aria-hidden="true">×</span></a>
         <p>Wähle ein Model, probiere einen der Looks oder stelle aus dem gesamten Sortiment dein Outfit zusammen.</p>
       </header>
 
@@ -21,10 +22,15 @@
             <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke anzeigen</button>
             <button class="outfit-expand" data-outfit-expand data-open="outfit-photo" type="button" disabled>Foto vergrößern <span aria-hidden="true">↗</span></button>
           </div>
+          <div class="outfit-mobile-actions" role="group" aria-label="Look bearbeiten">
+            <button type="button" data-outfit-panel-toggle="looks" aria-expanded="false" aria-controls="outfit-looks">Vorschläge</button>
+            <button type="button" data-outfit-panel-toggle="pieces" aria-expanded="false" aria-controls="outfit-pieces">Teile wählen</button>
+            <button type="button" data-outfit-panel-toggle="selection" aria-expanded="false" aria-controls="outfit-selection">Im Look</button>
+          </div>
         </div>
 
-        <div class="outfit-controls">
-          <div class="outfit-inspiration">
+        <div class="outfit-controls" data-outfit-controls role="region" aria-label="Look bearbeiten" tabindex="-1">
+          <div class="outfit-inspiration" id="outfit-looks" data-outfit-panel="looks">
             <h3>Look-Vorschläge</h3>
             <div class="outfit-pills outfit-presets" role="group" aria-label="Vorgeschlagenen Look wählen">
               <button type="button" data-outfit-preset="espresso" aria-pressed="true">Espresso</button>
@@ -33,7 +39,7 @@
             </div>
           </div>
 
-          <div class="outfit-selection">
+          <div class="outfit-selection" id="outfit-selection" data-outfit-panel="selection">
             <div class="outfit-selection-heading">
               <h3>Im Look</h3>
               <button type="button" class="outfit-match" data-outfit-match>Passend kombinieren <span aria-hidden="true">↗</span></button>
@@ -41,7 +47,7 @@
             <ul class="outfit-summary" data-outfit-summary role="list"></ul>
           </div>
 
-          <div class="outfit-picker">
+          <div class="outfit-picker" id="outfit-pieces" data-outfit-panel="pieces">
             <h3>Stücke wählen</h3>
             <div class="outfit-pills outfit-slots" role="group" aria-label="Kleidungsart wählen">
               <button type="button" data-outfit-slot="jacket" aria-pressed="true" aria-controls="outfit-options">Jacken &amp; Westen</button>
@@ -56,10 +62,11 @@
             <div class="outfit-options" id="outfit-options" data-outfit-list role="group" aria-label="Verfügbare Stücke"></div>
           </div>
 
-          <p class="visually-hidden" data-outfit-feedback role="status"></p>
-          <noscript><p>Für die Outfit-Vorschau brauchst du JavaScript. <a href="{{ '/collections/menswear/' | relative_url }}">Zum Sortiment</a></p></noscript>
+          <button type="button" class="action dark outfit-back" data-outfit-panel-back>Look ansehen <span aria-hidden="true">↑</span></button>
         </div>
       </div>
+      <p class="visually-hidden" data-outfit-feedback role="status"></p>
+      <noscript><p>Für die Outfit-Vorschau brauchst du JavaScript. <a href="{{ '/collections/menswear/' | relative_url }}">Zum Sortiment</a></p></noscript>
       <dialog id="outfit-photo" aria-labelledby="outfit-photo-title">
         <div class="dialog-heading">
           <h2 id="outfit-photo-title">Dein Look</h2>

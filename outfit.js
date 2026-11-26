@@ -128,6 +128,10 @@ function initOutfitBuilder(root, catalog) {
   const poster = root.querySelector('[data-outfit-poster]');
   const expand = root.querySelector('[data-outfit-expand]');
   const photo = root.querySelector('[data-outfit-photo]');
+  const controls = root.querySelector('[data-outfit-controls]');
+  const panelButtons = [...root.querySelectorAll('[data-outfit-panel-toggle]')];
+  const stage = root.querySelector('.outfit-stage');
+  const mobileStudio = window.matchMedia('(max-width: 790px)');
   const state = {
     model: models.has('espresso') ? 'espresso' : modelButtons[0].dataset.outfitModel,
     slot: 'jacket',
@@ -142,6 +146,25 @@ function initOutfitBuilder(root, catalog) {
   let previewModule;
 
   const selected = slot => products.get(state.items[slot]);
+
+  function setMobilePanel(panel) {
+    if (panel) root.dataset.editorPanel = panel;
+    else delete root.dataset.editorPanel;
+    for (const button of panelButtons) {
+      button.setAttribute('aria-expanded', button.dataset.outfitPanelToggle === panel);
+    }
+  }
+
+  function returnToLook() {
+    const previous = root.dataset.editorPanel;
+    setMobilePanel();
+    panelButtons.find(button => button.dataset.outfitPanelToggle === previous)?.focus({ preventScroll: true });
+    stage.scrollIntoView({ block: 'start' });
+  }
+
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash !== '#styling') setMobilePanel();
+  });
 
   function renderChoices() {
     slotButtons.forEach(button => button.setAttribute('aria-pressed', button.dataset.outfitSlot === state.slot));
@@ -292,7 +315,16 @@ function initOutfitBuilder(root, catalog) {
   root.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button || !root.contains(button)) return;
-    const { outfitSlot, outfitModel, outfitPreset, outfitChoice } = button.dataset;
+    const { outfitSlot, outfitModel, outfitPreset, outfitChoice, outfitPanelToggle } = button.dataset;
+
+    if (outfitPanelToggle) {
+      if (root.dataset.editorPanel === outfitPanelToggle) return returnToLook();
+      setMobilePanel(outfitPanelToggle);
+      controls.focus({ preventScroll: true });
+      controls.scrollIntoView({ block: 'start' });
+      return;
+    }
+    if (button.hasAttribute('data-outfit-panel-back')) return returnToLook();
 
     if (outfitSlot && Object.hasOwn(slots, outfitSlot) && state.slot !== outfitSlot) {
       state.slot = outfitSlot;
@@ -308,6 +340,7 @@ function initOutfitBuilder(root, catalog) {
       state.showJacket = true;
       state.items = { ...presets[outfitPreset] };
       commitOutfit('Kampagnenlook ausgewählt.');
+      if (mobileStudio.matches && root.dataset.editorPanel) returnToLook();
     } else if (outfitChoice !== undefined) {
       const id = outfitChoice || null;
       if (id === state.items[state.slot]) return;
@@ -321,6 +354,7 @@ function initOutfitBuilder(root, catalog) {
       state.items = matchOutfit(groups, products, state.items, state.anchor, preferred);
       state.showJacket = true;
       commitOutfit('Passende Stücke für den Look ausgewählt.');
+      if (mobileStudio.matches && root.dataset.editorPanel) returnToLook();
     } else if (button === layerButton && selected('jacket')) {
       showJacketInPreview(!state.showJacket);
     }
