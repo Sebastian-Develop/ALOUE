@@ -107,7 +107,6 @@ products:
     material: "84 % Polyamid, 16 % Elasthan"
     fit: "Regular Fit"
     gallery: ["produkt-men-gilet-reversible-falcon-espresso-ansicht-2.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-3.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-4.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-5.jpg", "produkt-men-gilet-reversible-falcon-espresso-ansicht-6.jpg"]
-    featured: true
   - id: "men-gilet-reversible-teal-blue-falcon"
     collections: ["wendewesten"]
     name: "Wendeweste aus Travelstoff"

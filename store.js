@@ -122,13 +122,24 @@ function renderBag() {
       saveBag();
       (bagItems.querySelector('button') || bag.querySelector('[data-close]')).focus();
     });
-    row.className = 'bag-row';
-    row.append(
+    const photo = document.createElement('img');
+    photo.className = 'bag-photo';
+    photo.src = product.photos[0];
+    photo.alt = '';
+    photo.width = 72;
+    photo.height = 108;
+    const details = document.createElement('div');
+    details.className = 'bag-line-copy';
+    const label = element('p', `${product.tone} · Größe ${item.size} · Menge ${item.quantity}`);
+    label.className = 'bag-line-meta';
+    details.append(
       element('h3', product.name),
+      label,
       element('p', priced ? euros(price) : 'Preis folgt'),
-      element('p', `${product.tone} · Größe ${item.size} · Menge ${item.quantity}`),
-      remove
+      remove,
     );
+    row.className = 'bag-row';
+    row.append(photo, details);
     subtotal += price;
     allPriced = allPriced && priced;
     return row;
@@ -200,6 +211,7 @@ function showProduct(id, trigger) {
   );
   productForm.reset();
   showDialog(productDialog, trigger);
+  productDialog.scrollTop = 0;
 }
 
 function renderSearch() {

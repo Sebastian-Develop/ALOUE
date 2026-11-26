@@ -2,10 +2,7 @@
 layout: null
 ---
 {% assign shop = site.pages | where: 'shop_data', true | first %}
-{% assign products = shop.products | where: 'featured', true %}
-{% assign jackets_tile = shop.products | where: 'id', 'wool-blend-jacket-espresso' | first %}
-{% assign shirts_tile = shop.products | where: 'id', 'men-cotton-t-shirt-kit' | first %}
-{% assign trousers_tile = shop.products | where: 'id', 'men-trousers-l32-dark-grey' | first %}
+{% assign products = shop.products | where: 'featured', true | slice: 0, 3 %}
 {% assign shop_title = 'ALOUÉ | Kollektion 01' %}
 {% assign shop_description = 'ALOUÉ. Vorschau auf die erste Kollektion und den zukünftigen Onlineshop.' %}
 {% include_relative _shop-head.html %}
@@ -22,20 +19,15 @@ layout: null
       <a href="#editorial" class="hero-editorial glass glass-light">Zum Editorial</a>
     </section>
 
-    <section class="collection container" id="kollektion" aria-labelledby="collection-title">
+    <section class="collection container home-featured" id="kollektion" aria-labelledby="collection-title">
       <div class="collection-header">
-        <div>
-          <p class="eyebrow">Die erste Kollektion</p>
-          <h2 id="collection-title">Ausgewählte Stücke</h2>
-        </div>
-        <nav class="filters" aria-label="Kollektionen entdecken">
-          <a href="{{ '/collections/menswear/' | relative_url }}">Alle</a>
-          <a href="{{ '/collections/jacken/' | relative_url }}" data-legacy-category="jacken">Jacken</a>
-          <a href="{{ '/collections/t-shirts-longsleeves/' | relative_url }}">Shirts</a>
-          <a href="{{ '/collections/hosen-shorts/' | relative_url }}">Hosen</a>
-        </nav>
+        <h2 id="collection-title">Ausgewählte Stücke</h2>
+        <a class="shop-all" href="{{ '/collections/menswear/' | relative_url }}">Gesamtes Sortiment <span aria-hidden="true">→</span></a>
       </div>
 {% include_relative _shop-products.html %}
+      <div class="home-shop-nav" id="menswear">
+{% include_relative _shop-category-bar.html %}
+      </div>
     </section>
 
     <section class="films container" id="filme" aria-labelledby="films-title">
@@ -98,22 +90,5 @@ layout: null
       </div>
     </section>
 
-    <section class="menswear-overview container" id="menswear" aria-labelledby="menswear-overview-title">
-      <h2 id="menswear-overview-title">Menswear entdecken.</h2>
-      <div class="menswear-tiles">
-        <a class="menswear-tile" href="{{ '/collections/jacken/' | relative_url }}">
-          <div class="menswear-tile-image"><img src="{{ jackets_tile.image | relative_url }}" alt="" width="600" height="900" loading="lazy"></div>
-          <span>Jacken <span aria-hidden="true">↗</span></span>
-        </a>
-        <a class="menswear-tile" href="{{ '/collections/t-shirts-longsleeves/' | relative_url }}">
-          <div class="menswear-tile-image"><img src="{{ shirts_tile.image | relative_url }}" alt="" width="600" height="900" loading="lazy"></div>
-          <span>T-Shirts &amp; Longsleeves <span aria-hidden="true">↗</span></span>
-        </a>
-        <a class="menswear-tile" href="{{ '/collections/hosen-shorts/' | relative_url }}">
-          <div class="menswear-tile-image"><img src="{{ trousers_tile.image | relative_url }}" alt="" width="600" height="900" loading="lazy"></div>
-          <span>Hosen &amp; Shorts <span aria-hidden="true">↗</span></span>
-        </a>
-      </div>
-    </section>
   </main>
 {% include_relative _shop-end.html %}

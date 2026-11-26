@@ -28,26 +28,41 @@
   </dialog>
 
   <dialog id="product" aria-labelledby="product-title">
-    <div class="dialog-heading"><h2 id="product-title"></h2><button type="button" class="icon-button glass" data-close aria-label="Produkt schließen"><svg><use href="#close-icon"/></svg></button></div>
-    <img class="detail-image" alt="">
-    <div class="detail-gallery" aria-label="Produktbilder" hidden>
-      <button type="button" class="icon-button glass" data-photo-step="-1" aria-label="Vorheriges Produktbild">‹</button>
-      <span data-photo-count role="status"></span>
-      <button type="button" class="icon-button glass" data-photo-step="1" aria-label="Nächstes Produktbild">›</button>
+    <div class="detail-toolbar">
+      <button type="button" class="icon-button detail-close" data-close aria-label="Produkt schließen" autofocus>
+        <svg aria-hidden="true"><use href="#close-icon"/></svg>
+      </button>
     </div>
-    <p class="detail-summary"></p>
-    <p class="detail-description"></p>
-    <dl class="detail-facts">
-      <div><dt>Material</dt><dd data-product-material></dd></div>
-      <div><dt>Passform</dt><dd data-product-fit></dd></div>
-    </dl>
-    <form id="product-form">
-      <label for="size">Größe</label>
-      <select id="size" required>
-        <option value="">Größe wählen</option>
-      </select>
-      <button class="action dark" type="submit">In die Tasche legen</button>
-    </form>
+    <div class="product-detail">
+      <div class="detail-media">
+        <img class="detail-image" alt="">
+        <div class="detail-gallery" role="group" aria-label="Produktbilder" hidden>
+          <button type="button" class="icon-button" data-photo-step="-1" aria-label="Vorheriges Produktbild">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></svg>
+          </button>
+          <span data-photo-count role="status"></span>
+          <button type="button" class="icon-button" data-photo-step="1" aria-label="Nächstes Produktbild">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m10 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="detail-copy">
+        <h2 id="product-title"></h2>
+        <p class="detail-summary"></p>
+        <p class="detail-description"></p>
+        <dl class="detail-facts">
+          <div><dt>Material</dt><dd data-product-material></dd></div>
+          <div><dt>Passform</dt><dd data-product-fit></dd></div>
+        </dl>
+        <form id="product-form">
+          <label for="size">Größe</label>
+          <select id="size" required>
+            <option value="">Größe wählen</option>
+          </select>
+          <button class="action dark" type="submit">In die Tasche legen</button>
+        </form>
+      </div>
+    </div>
   </dialog>
 
   <dialog id="bag" aria-labelledby="bag-title">

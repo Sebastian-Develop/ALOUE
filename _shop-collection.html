@@ -19,9 +19,14 @@
         <a href="{{ '/collections/menswear/' | relative_url }}">Menswear</a>
         {% endif %}
       </nav>
-      <h1 id="collection-title">{{ collection.title | escape }}</h1>
+      <header class="catalogue-heading">
+        <h1 id="collection-title">{{ collection.title | escape }}</h1>
+        {% if products.size > 0 %}
+        <p class="collection-count">{{ products.size }} {% if products.size == 1 %}Stück{% else %}Stücke{% endif %}</p>
+        {% endif %}
+      </header>
+      {% include_relative _shop-category-bar.html %}
       {% if products.size > 0 %}
-      <p class="collection-count">{{ products.size }} {% if products.size == 1 %}Stück{% else %}Stücke{% endif %}</p>
       {% unless collection.handle == 'menswear' %}
       {% include_relative _shop-products.html %}
       {% endunless %}
@@ -39,7 +44,10 @@
     {% assign products = shop.products | where_exp: 'product', 'product.collections contains group_handle' %}
     {% if products.size > 0 %}
     <section class="container catalogue-group" aria-labelledby="{{ group_handle }}-title">
-      <h2 id="{{ group_handle }}-title"><a href="{{ group_handle | prepend: '/collections/' | append: '/' | relative_url }}">{{ group.title | escape }}</a></h2>
+      <div class="catalogue-group-heading">
+        <h2 id="{{ group_handle }}-title">{{ group.title | escape }}</h2>
+        <a class="shop-all" href="{{ group_handle | prepend: '/collections/' | append: '/' | relative_url }}">Alle {{ group.title | escape }} <span aria-hidden="true">→</span></a>
+      </div>
       {% include_relative _shop-products.html %}
     </section>
     {% endif %}

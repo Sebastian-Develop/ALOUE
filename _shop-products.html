@@ -1,4 +1,4 @@
-      <div class="product-grid">
+      <div class="product-grid{% if products.size == 3 %} product-grid--three{% endif %}">
         {% for product in products %}
         <article class="product" data-id="{{ product.id | escape }}">
           <button class="product-image" type="button" data-product aria-label="{{ product.name | escape }} in {{ product.tone | escape }} ansehen">
