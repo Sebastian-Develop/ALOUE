@@ -9,18 +9,15 @@ GitHub Pages baut die Kategorieseiten mit Jekyll. Der Vorschaukatalog und die Ka
 - Header, Kampagne, Kollektion, Kampagnenfilme, Editorial und Menswear sind eigenständige HTML-Bereiche und können als Liquid-Sections in ein Theme übernommen werden.
 - CSS, Bilddateien und die Liquid-Glass-Module können als Theme-Assets geladen werden. Dateinamen und relative Modulverweise im Theme übernehmen oder über die Shopify-Asset-URLs auflösen.
 - Den Vorschaukatalog mit Shopify-Kollektionen, Produktobjekten und Varianten verbinden. Suche und Warenkorb übernehmen die Funktionen des Ziel-Themes.
-- Die Menswear-Links im Theme auf die jeweiligen Shopify-Kollektionen setzen. Die Vorschau nutzt eigene Seiten unter `/collections/` und zeigt einen Hinweis bei noch leeren Kategorien.
+- Die Menswear-Links im Theme auf die jeweiligen Shopify-Kollektionen setzen. In der Vorschau erscheinen Kollektionen mit Produkten. Frühere Links zu leeren Kollektionen leiten zu passenden Sortimentsseiten weiter.
 - `shopify-bestseller.liquid` als `sections/aloue-bestseller.liquid` ins Ziel-Theme übernehmen und als Startseiten-Section hinzufügen. Eine nach „Bestseller“ sortierte Shopify-Kollektion auswählen. Die Section übernimmt deren erste drei Produkte. Das Label „Bestseller“ im Theme-Editor aktivieren, sobald Bestelldaten vorliegen. In der GitHub-Pages-Vorschau kommen die drei Karten aus den markierten `featured`-Produkten in `shop-data.json`.
-- Für einen Film einen `src` oder ein `<source src="…">` und das passende `poster` am jeweiligen Video ergänzen. In Shopify kann die Section dafür ein Video-Setting und den Liquid-Filter `video_tag` verwenden. Die Vorschau zeigt bei freien Plätzen ein Standbild.
+- Kampagnenfilme als `films` in `shop-data.json` eintragen. Jeder Eintrag braucht `title` und `src` und kann ein `poster` haben. Mit dem ersten Film erscheinen der Bereich und die Navigationslinks. In Shopify kann die Section ein Video-Setting und den Liquid-Filter `video_tag` verwenden.
 - Für die Navigation `.masthead`, `.bar`, die Regeln für `.is-scrolled` und die Scroll-Logik aus `store.js` übernehmen. Chromium nutzt die SVG-Verschiebungskarte auf dem Live-Hintergrund. Browser ohne SVG-Backdrop, darunter Safari und Chrome auf dem iPhone, verwenden Glass SDK 0.0.3-beta.4 mit einem WebGL-Worker und einer auf ALOUÉ abgestimmten Kantenbrechung. Die Module `scene-refraction.js` und `campaign-refraction.js` übernehmen die Brechung auf älteren Geräten. Die Einstellung für reduzierte Transparenz gilt für alle Varianten.
 
 [Shopify Theme-Architektur](https://shopify.dev/docs/storefronts/themes/architecture) · [Liquid Glass 0.3.0](https://www.npmjs.com/package/@dpawlikowski/liquid-glass/v/0.3.0) · [MIT-Lizenz](liquid-glass-license.txt) · [Glass SDK 0.0.3-beta.4](https://github.com/Glass-HQ/liquid-glass/releases/tag/liquid-glass%400.0.3-beta.4) · [MIT-Lizenz](glass-sdk-license.txt)
 
-## Platzhalterbilder
+## Kampagne und Produktfotos
 
-Die integrierte ImageGen-Funktion erstellte das Kampagnenmotiv `campaign.jpg` und die Filmstandbilder.
-
-- Kampagne: realistisches Herrenmode-Editorial mit zwei Models in anthrazit- und steinfarbener Kleidung vor warmer Betonarchitektur. Die linke Bildhälfte bleibt dunkel und ruhig für den separaten Seitentitel.
+- Kampagne: `campaign-aloue.jpg` ist eine ImageGen-Bearbeitung des vorhandenen Kampagnenmotivs. Die beiden bisherigen Models tragen Jacken, Baumwollshirts und Travelhosen nach Referenzen aus dem ALOUÉ-Katalog.
 - Katalog: Die Produktfotos `produkt-*.jpg` stammen aus den zugeordneten Lieferantengalerien. In `shop-data.json` stehen bei Wendewesten und Wendejacken weitere Ansichten.
-- Filmstandbilder: vier mit ImageGen erstellte Menswear-Aufnahmen in warmem Kalkstein, Ecru, Taupe und Anthrazit. Die Dateien `film-*.jpg` sind auf 9:16 zugeschnitten.
 - `wordmark.png` ist die freigestellte Wortmarke aus dem von ALOUÉ bereitgestellten Originallogo.

@@ -1,12 +1,12 @@
       <div class="product-grid{% if products.size == 3 %} product-grid--three{% endif %}">
         {% for product in products %}
         <article class="product" data-id="{{ product.id | escape }}">
-          <button class="product-image" type="button" data-product aria-label="{{ product.name | escape }} in {{ product.tone | escape }} ansehen">
-            <img src="{{ product.image | relative_url }}" width="600" height="900" alt="{{ product.alt | escape }}" loading="lazy" decoding="async">
-            <span class="product-plus glass" aria-hidden="true"><svg><use href="#plus-icon"/></svg></span>
-          </button>
+          <div class="product-image" aria-hidden="true">
+            <img src="{{ product.image | relative_url }}" width="600" height="900" alt="" loading="lazy" decoding="async">
+            <span class="product-plus glass"><svg><use href="#plus-icon"/></svg></span>
+          </div>
           <div class="product-info">
-            <h3>{{ product.name | escape }}</h3>
+            <h3><button class="product-select" type="button" data-product="{{ product.id | escape }}" aria-label="{{ product.name | escape }} in {{ product.tone | escape }} ansehen">{{ product.name | escape }}</button></h3>
             {% if product.price %}
             {% assign cents = product.price | modulo: 100 | prepend: '0' | slice: -2, 2 %}
             <span>{{ product.price | divided_by: 100 }},{{ cents }} €</span>

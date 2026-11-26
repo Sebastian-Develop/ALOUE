@@ -4,12 +4,12 @@ layout: null
 {% assign shop = site.pages | where: 'shop_data', true | first %}
 {% assign products = shop.products | where: 'featured', true | slice: 0, 3 %}
 {% assign shop_title = 'ALOUÉ | Kollektion 01' %}
-{% assign shop_description = 'ALOUÉ. Vorschau auf die erste Kollektion und den zukünftigen Onlineshop.' %}
+{% assign shop_description = 'Entdecke die erste Menswear-Kollektion von ALOUÉ mit Jacken, Baumwollshirts und Travelhosen.' %}
 {% include_relative _shop-head.html %}
 {% include_relative _shop-header.html %}
   <main id="hauptinhalt" tabindex="-1">
     <section class="hero" aria-labelledby="hero-title">
-      <img class="hero-image" src="campaign.jpg" alt="Zwei Models in dunkler und steinfarbener Kleidung vor einer Betonfassade" fetchpriority="high">
+      <img class="hero-image" src="{{ '/campaign-aloue.jpg' | relative_url }}" alt="Zwei Models in der Espressojacke und der beigen Wendejacke vor einer Betonfassade" width="1536" height="1024" fetchpriority="high">
       <div class="hero-content">
         <p class="eyebrow">ALOUÉ / Kollektion 01</p>
         <h1 id="hero-title">Form in<br><em>Ruhe.</em></h1>
@@ -30,63 +30,43 @@ layout: null
       </div>
     </section>
 
+    {% if shop.films.size > 0 %}
     <section class="films container" id="filme" aria-labelledby="films-title">
       <div class="films-heading">
-        <div>
-          <p class="eyebrow">ALOUÉ / Kollektion 01</p>
-          <h2 id="films-title">In Bewegung.</h2>
-        </div>
-        <p class="films-note">Die Kampagnenfilme folgen.</p>
+        <h2 id="films-title">In Bewegung.</h2>
       </div>
       <ul class="films-grid" role="list" tabindex="0" aria-label="Kampagnenfilme">
+        {% for film in shop.films %}
         <li>
           <figure class="film">
             <div class="film-frame">
-              <video preload="none" playsinline controls aria-labelledby="film-overshirt-title"></video>
-              <img src="film-overshirt.jpg" alt="Anthrazitfarbenes Overshirt vor sonnigen Kalksteinsäulen" width="405" height="720" loading="lazy" decoding="async">
+              <video src="{{ film.src | relative_url | escape }}"{% if film.poster %} poster="{{ film.poster | relative_url | escape }}"{% endif %} preload="none" playsinline controls aria-labelledby="film-title-{{ forloop.index }}"></video>
             </div>
-            <figcaption id="film-overshirt-title">Das Overshirt</figcaption>
+            <figcaption id="film-title-{{ forloop.index }}">{{ film.title | escape }}</figcaption>
           </figure>
         </li>
-        <li>
-          <figure class="film">
-            <div class="film-frame">
-              <video preload="none" playsinline controls aria-labelledby="film-strick-title"></video>
-              <img src="film-strick.jpg" alt="Feine Rippen und Ärmelbündchen eines ecrufarbenen Pullovers" width="405" height="720" loading="lazy" decoding="async">
-            </div>
-            <figcaption id="film-strick-title">Feiner Strick</figcaption>
-          </figure>
-        </li>
-        <li>
-          <figure class="film">
-            <div class="film-frame">
-              <video preload="none" playsinline controls aria-labelledby="film-hose-title"></video>
-              <img src="film-hose.jpg" alt="Taupefarbene Bundfaltenhose in Bewegung auf einer Betontreppe" width="405" height="720" loading="lazy" decoding="async">
-            </div>
-            <figcaption id="film-hose-title">Die Bundfaltenhose</figcaption>
-          </figure>
-        </li>
-        <li>
-          <figure class="film">
-            <div class="film-frame">
-              <video preload="none" playsinline controls aria-labelledby="film-polo-title"></video>
-              <img src="film-polo.jpg" alt="Schwarzes Strickpolo im warmen Licht eines Studios" width="405" height="720" loading="lazy" decoding="async">
-            </div>
-            <figcaption id="film-polo-title">Das Strickpolo</figcaption>
-          </figure>
-        </li>
+        {% endfor %}
       </ul>
     </section>
+    {% endif %}
 
     <section class="editorial container" id="editorial" aria-labelledby="editorial-title">
       <div class="editorial-image">
-        <img src="campaign.jpg" alt="Kollektion 01 in einer rauen Betonarchitektur" loading="lazy">
+        <img src="{{ '/campaign-aloue.jpg' | relative_url }}" alt="Die beiden Looks aus Jacke, Baumwollshirt und Travelhose" width="1536" height="1024" loading="lazy" decoding="async">
       </div>
       <div class="editorial-copy">
         <p class="eyebrow">Editorial / Kollektion 01</p>
-        <h2 id="editorial-title">Die leisen<br><em>Details.</em></h2>
-        <p>Ruhige Farben und klare Linien prägen die erste Kollektion. Die Stücke lassen sich vielseitig kombinieren.</p>
-        <a class="action outline" href="#kollektion">Stücke ansehen</a>
+        <h2 id="editorial-title">Die Looks.</h2>
+        <p>Espresso mit Dunkelgrau. Beige mit Kit. Entdecke die Jacken aus der Kampagne.</p>
+        {% assign campaign_jackets = 'wool-blend-jacket-espresso,men-jacket-reversible-beige-kit' | split: ',' %}
+        <ul class="editorial-products" role="list">
+          {% for id in campaign_jackets %}
+          {% assign jacket = shop.products | where: 'id', id | first %}
+          {% if jacket %}
+          <li><button type="button" data-product="{{ jacket.id | escape }}"><span>{{ jacket.name | escape }}<small>{{ jacket.tone | escape }}</small></span><span aria-hidden="true">→</span></button></li>
+          {% endif %}
+          {% endfor %}
+        </ul>
       </div>
     </section>
 

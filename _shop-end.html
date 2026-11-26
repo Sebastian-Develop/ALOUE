@@ -1,8 +1,11 @@
   <footer class="footer">
     <div class="container footer-inner">
       <a class="brand" href="{{ '/' | relative_url }}" aria-label="ALOUÉ Startseite"><img src="{{ '/wordmark.png' | relative_url }}" width="640" height="166" alt="ALOUÉ"></a>
-      <nav aria-label="Fußnavigation"><a href="{{ '/collections/menswear/' | relative_url }}">Menswear</a><a href="{{ '/' | relative_url }}#filme">Filme</a><a href="{{ '/' | relative_url }}#editorial">Editorial</a></nav>
-      <p>ALOUÉ · Shop-Vorschau</p>
+      <nav aria-label="Fußnavigation">
+        <a href="{{ '/collections/menswear/' | relative_url }}">Menswear</a>
+        {% if shop.films.size > 0 %}<a href="{{ '/' | relative_url }}#filme">Filme</a>{% endif %}
+        <a href="{{ '/' | relative_url }}#editorial">Editorial</a>
+      </nav>
     </div>
   </footer>
 
@@ -16,15 +19,16 @@
         </ul>
       </details>
       <a href="{{ '/' | relative_url }}#editorial" data-close>Editorial</a>
-      <a href="{{ '/' | relative_url }}#filme" data-close>Filme</a>
+      {% if shop.films.size > 0 %}<a href="{{ '/' | relative_url }}#filme" data-close>Filme</a>{% endif %}
     </nav>
   </dialog>
 
   <dialog id="search" aria-labelledby="search-title">
     <div class="dialog-heading"><h2 id="search-title">Suche</h2><button type="button" class="icon-button glass" data-close aria-label="Suche schließen"><svg><use href="#close-icon"/></svg></button></div>
     <label class="visually-hidden" for="search-field">Produkte suchen</label>
-    <input id="search-field" type="search" placeholder="Produkt oder Farbe suchen" autocomplete="off" autofocus>
-    <div id="search-results" class="search-results" aria-live="polite"></div>
+    <input id="search-field" type="search" placeholder="Produkt oder Farbe suchen" autocomplete="off" enterkeyhint="search" aria-controls="search-results" autofocus>
+    <p id="search-status" class="search-status" role="status"></p>
+    <div id="search-results" class="search-results"></div>
   </dialog>
 
   <dialog id="product" aria-labelledby="product-title">
@@ -67,8 +71,13 @@
 
   <dialog id="bag" aria-labelledby="bag-title">
     <div class="dialog-heading"><h2 id="bag-title">Deine Tasche</h2><button type="button" class="icon-button glass" data-close aria-label="Tasche schließen"><svg><use href="#close-icon"/></svg></button></div>
-    <div id="bag-items" aria-live="polite"></div>
-    <div class="bag-footer" hidden><div class="bag-subtotal" hidden><span>Zwischensumme</span><strong data-subtotal></strong></div><p>Diese Vorschau nimmt keine Bestellungen an.</p></div>
+    <div id="bag-items"></div>
+    <p class="visually-hidden" id="bag-status" role="status"></p>
+    <div class="bag-footer" hidden>
+      <div class="bag-subtotal" hidden><span>Zwischensumme</span><strong data-subtotal></strong></div>
+      <p>Der Checkout öffnet mit dem Shopify-Shop.</p>
+    </div>
+    <a class="action outline bag-browse" href="{{ '/collections/menswear/' | relative_url }}">Weiter einkaufen</a>
   </dialog>
   <script id="shop-catalog" type="application/json">{{ shop.products | jsonify | replace: '<', '\u003c' }}</script>
 </body>

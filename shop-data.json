@@ -13,9 +13,14 @@ collections:
     description: T-Shirts und Longsleeves für die ALOUÉ-Garderobe.
   - handle: hosen-shorts
     legacy: hosen
-    title: Hosen & Shorts
-    menu_label: Hosen & Shorts
-    description: Hosen und Shorts aus der ALOUÉ-Kollektion.
+    title: Hosen
+    menu_label: Hosen
+    description: Hosen aus der ALOUÉ-Kollektion.
+  - handle: jacken
+    legacy: jacken
+    title: Jacken
+    menu_label: Jacken
+    description: Jacken aus der ALOUÉ-Kollektion.
   - handle: weite-hosen
     legacy: weite-hosen
     title: Weite Hosen
@@ -56,10 +61,6 @@ collections:
     title: Sommer-Sets
     menu_label: Sommer-Sets
     description: Aufeinander abgestimmte Stücke für den Sommer.
-  - handle: jacken
-    legacy: jacken
-    title: Jacken
-    description: Jacken und Overshirts aus der ALOUÉ-Kollektion.
 products:
   - id: "wool-blend-jacket-dark-blue"
     collections: ["jacken"]

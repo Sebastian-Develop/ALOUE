@@ -1,8 +1,10 @@
   {% for category in shop.collections %}
-    {% if category.menu_label %}
-      {% assign route = category.handle | prepend: '/collections/' | append: '/' %}
-      <li{% if category.handle == 'menswear' %} class="menswear-all"{% endif %}>
-        <a href="{{ route | relative_url }}" data-collection-link{% if category.legacy %} data-legacy-category="{{ category.legacy }}"{% endif %}{% if page.collection_handle == category.handle %} aria-current="page"{% endif %}>{{ category.menu_label | escape }}</a>
+    {% assign menu_handle = category.handle %}
+    {% assign category_products = shop.products | where_exp: 'candidate', 'candidate.collections contains menu_handle' %}
+    {% if menu_handle == 'menswear' or category_products.size > 0 %}
+      {% assign route = menu_handle | prepend: '/collections/' | append: '/' %}
+      <li{% if menu_handle == 'menswear' and category_shortcuts != true %} class="menswear-all"{% endif %}>
+        <a href="{{ route | relative_url }}" data-collection-link{% if category.legacy %} data-legacy-category="{{ category.legacy }}"{% endif %}{% if page.collection_handle == menu_handle %} aria-current="page"{% endif %}>{% if menu_handle == 'menswear' and category_shortcuts %}Alle{% else %}{{ category.menu_label | default: category.title | escape }}{% endif %}</a>
       </li>
     {% endif %}
   {% endfor %}

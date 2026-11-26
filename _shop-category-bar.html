@@ -1,8 +1,7 @@
       <nav class="filters shop-category-bar" aria-label="Kollektionen entdecken">
-        {% assign shortcut_handles = 'menswear,jacken,wendewesten,wendejacken,kapuzenjacken,t-shirts-longsleeves,hosen-shorts' | split: ',' %}
-        {% for handle in shortcut_handles %}
-        {% assign shortcut = shop.collections | where: 'handle', handle | first %}
-        {% assign href = handle | prepend: '/collections/' | append: '/' | relative_url %}
-        <a href="{{ href }}"{% if page.collection_handle == handle %} aria-current="page"{% endif %}{% if handle == 'jacken' %} data-legacy-category="jacken"{% endif %}>{% if handle == 'menswear' %}Alle{% else %}{{ shortcut.title | escape }}{% endif %}</a>
-        {% endfor %}
+        <ul class="shop-category-links" role="list">
+          {% assign category_shortcuts = true %}
+          {% include_relative _shop-collection-links.html %}
+          {% assign category_shortcuts = false %}
+        </ul>
       </nav>

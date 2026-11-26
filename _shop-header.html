@@ -9,7 +9,6 @@
   </svg>
 
   <a class="skip-link" href="#hauptinhalt">Zum Inhalt</a>
-  <div class="notice">Shop-Vorschau · Kollektion 01</div>
 
   <header class="masthead">
     <div class="bar liquid-glass--subtle">
@@ -18,7 +17,7 @@
           <button class="menswear-trigger" type="button" aria-expanded="false" aria-controls="menswear-menu">
             Menswear <svg aria-hidden="true"><use href="#chevron-icon"/></svg>
           </button>
-          <a href="{{ '/' | relative_url }}#filme">Filme</a>
+          {% if shop.films.size > 0 %}<a href="{{ '/' | relative_url }}#filme">Filme</a>{% endif %}
           <a href="{{ '/' | relative_url }}#editorial">Editorial</a>
         </nav>
         <button class="icon-button menu-trigger" type="button" data-open="menu" aria-label="Menü öffnen">

@@ -4,6 +4,22 @@
 {% unless collection.handle == 'menswear' %}
   {% assign products = products | where_exp: 'product', 'product.collections contains collection.handle' %}
 {% endunless %}
+{% if products.size == 0 and page.fallback_collection %}
+{% assign fallback_path = page.fallback_collection | prepend: '/collections/' | append: '/' %}
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <meta http-equiv="refresh" content="0; url={{ fallback_path | relative_url }}">
+  <title>Menswear | ALOUÉ</title>
+</head>
+<body>
+  <a href="{{ fallback_path | relative_url }}">Zur Kollektion</a>
+</body>
+</html>
+{% else %}
 {% assign shop_title = collection.title | append: ' | ALOUÉ' %}
 {% assign shop_description = collection.description %}
 {% include_relative _shop-head.html %}
@@ -55,3 +71,4 @@
     {% endif %}
   </main>
 {% include_relative _shop-end.html %}
+{% endif %}
