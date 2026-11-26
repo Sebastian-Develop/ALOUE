@@ -7,17 +7,20 @@
       <div class="outfit-workspace">
         <div class="outfit-preview">
           <div class="outfit-models" role="group" aria-label="Model wählen">
-            <button type="button" data-outfit-model="espresso" data-name="Model 1" data-src="{{ '/style-model-espresso.jpg' | relative_url }}" aria-pressed="true">Model 1</button>
-            <button type="button" data-outfit-model="kit" data-name="Model 2" data-src="{{ '/style-model-kit.jpg' | relative_url }}" aria-pressed="false">Model 2</button>
+            <button type="button" data-outfit-model="espresso" data-name="Model 1" data-src="{{ '/style-model-espresso.jpg' | relative_url }}" aria-pressed="true"><span class="outfit-model-thumb" style="--outfit-thumb:url('{{ '/style-model-espresso.jpg' | relative_url }}')" aria-hidden="true"></span>Model 1</button>
+            <button type="button" data-outfit-model="kit" data-name="Model 2" data-src="{{ '/style-model-kit.jpg' | relative_url }}" aria-pressed="false"><span class="outfit-model-thumb" style="--outfit-thumb:url('{{ '/style-model-kit.jpg' | relative_url }}')" aria-hidden="true"></span>Model 2</button>
           </div>
           <figure class="outfit-stage">
             <div class="outfit-portrait">
               <img data-outfit-poster src="{{ '/style-model-espresso.jpg' | relative_url }}" width="800" height="1200" alt="Model 1 aus der ALOUÉ-Kampagne" loading="lazy" decoding="async">
               <canvas data-outfit-canvas hidden></canvas>
             </div>
-            <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke anzeigen</button>
-            <figcaption>Digitale Styling-Vorschau</figcaption>
+            <figcaption>Styling-Vorschau</figcaption>
           </figure>
+          <div class="outfit-view-actions">
+            <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke anzeigen</button>
+            <button class="outfit-expand" data-outfit-expand data-open="outfit-photo" type="button" disabled>Foto vergrößern <span aria-hidden="true">↗</span></button>
+          </div>
         </div>
 
         <div class="outfit-controls">
@@ -28,6 +31,14 @@
               <button type="button" data-outfit-preset="kit" aria-pressed="false">Sand</button>
               <button type="button" data-outfit-preset="contrast" aria-pressed="false">Kontrast</button>
             </div>
+          </div>
+
+          <div class="outfit-selection">
+            <div class="outfit-selection-heading">
+              <h3>Im Look</h3>
+              <button type="button" class="outfit-match" data-outfit-match>Passend kombinieren <span aria-hidden="true">↗</span></button>
+            </div>
+            <ul class="outfit-summary" data-outfit-summary role="list"></ul>
           </div>
 
           <div class="outfit-picker">
@@ -45,16 +56,15 @@
             <div class="outfit-options" id="outfit-options" data-outfit-list role="group" aria-label="Verfügbare Stücke"></div>
           </div>
 
-          <div class="outfit-selection">
-            <div class="outfit-selection-heading">
-              <h3>Im Look</h3>
-              <button type="button" class="outfit-match" data-outfit-match>Passend kombinieren <span aria-hidden="true">↗</span></button>
-            </div>
-            <ul class="outfit-summary" data-outfit-summary role="list"></ul>
-          </div>
-
           <p class="visually-hidden" data-outfit-feedback role="status"></p>
           <noscript><p>Für die Outfit-Vorschau brauchst du JavaScript. <a href="{{ '/collections/menswear/' | relative_url }}">Zum Sortiment</a></p></noscript>
         </div>
       </div>
+      <dialog id="outfit-photo" aria-labelledby="outfit-photo-title">
+        <div class="dialog-heading">
+          <h2 id="outfit-photo-title">Dein Look</h2>
+          <button type="button" class="icon-button" data-close aria-label="Foto schließen"><svg aria-hidden="true"><use href="#close-icon"/></svg></button>
+        </div>
+        <canvas data-outfit-photo role="img"></canvas>
+      </dialog>
     </section>

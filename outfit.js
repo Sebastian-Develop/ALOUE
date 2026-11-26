@@ -60,6 +60,15 @@ function tones(product) {
   return product.tone.split(/\s*\/\s*/);
 }
 
+function previewKind(slot, product) {
+  if (slot === 'trousers') return product.id.includes('-l34-') ? 'trousers-l34' : 'trousers-l32';
+  if (slot === 'shirt') return product.id.includes('-long-sleeves-') ? 'longsleeve' : 't-shirt';
+  if (product.collections.includes('wendewesten')) return 'gilet';
+  if (product.collections.includes('wendejacken')) return 'reversible-jacket';
+  if (product.collections.includes('kapuzenjacken')) return 'parka';
+  return 'wool-jacket';
+}
+
 function affinity(product, reference) {
   let best = 0;
   for (const a of tones(product)) {
@@ -117,6 +126,8 @@ function initOutfitBuilder(root, catalog) {
   const feedback = root.querySelector('[data-outfit-feedback]');
   const canvas = root.querySelector('[data-outfit-canvas]');
   const poster = root.querySelector('[data-outfit-poster]');
+  const expand = root.querySelector('[data-outfit-expand]');
+  const photo = root.querySelector('[data-outfit-photo]');
   const state = {
     model: models.has('espresso') ? 'espresso' : modelButtons[0].dataset.outfitModel,
     slot: 'jacket',
@@ -219,28 +230,34 @@ function initOutfitBuilder(root, catalog) {
     poster.src = button.dataset.src;
     const name = button.dataset.name || button.textContent.trim();
     poster.alt = button.dataset.alt || `${name} aus der ALOUÉ-Kampagne`;
-    poster.hidden = false;
-    canvas.hidden = true;
+    if (canvas.hidden) poster.hidden = false;
   }
 
   async function updatePreview() {
     if (!previewActive) return;
     const version = ++previewVersion;
+    expand.disabled = true;
     const button = models.get(state.model);
     const garmentNames = [];
     const modelName = button.dataset.name || button.textContent.trim();
-    const outfit = { model: { src: new URL(button.dataset.src, document.baseURI).href } };
+    const outfit = {
+      model: { id: state.model, src: new URL(button.dataset.src, document.baseURI).href },
+    };
     for (const slot of Object.keys(slots)) {
       if (slot === 'jacket' && !state.showJacket) continue;
       const product = selected(slot);
       if (!product) continue;
-      outfit[slot] = product.photo;
+      outfit[slot] = {
+        src: product.photo,
+        kind: previewKind(slot, product),
+        tone: product.tone,
+        swatches: product.swatches,
+      };
       garmentNames.push(`${product.name} in ${product.tone}`);
     }
 
     try {
-      if (button.dataset.previewSlots) outfit.model.slots = JSON.parse(button.dataset.previewSlots);
-      previewModule ??= import('./outfit-preview.js');
+      previewModule ??= import('./outfit-preview.js?v=photo-plates');
       const { renderOutfitPreview } = await previewModule;
       if (version !== previewVersion) return;
       const rendered = await renderOutfitPreview(canvas, outfit);
@@ -249,13 +266,22 @@ function initOutfitBuilder(root, catalog) {
       canvas.setAttribute('aria-label', `${modelName}, Stylingvorschau: ${garmentNames.join(', ')}`);
       canvas.hidden = false;
       poster.hidden = true;
+      expand.disabled = false;
     } catch {
       if (version !== previewVersion) return;
       canvas.hidden = true;
       poster.hidden = false;
-      feedback.textContent = 'Die Bildvorschau ist gerade nicht verfügbar. Die gewählten Stücke stehen darunter.';
+      expand.disabled = true;
+      feedback.textContent = 'Die Bildvorschau ist gerade nicht verfügbar. Die gewählten Stücke stehen unter „Im Look“.';
     }
   }
+
+  expand.addEventListener('click', () => {
+    photo.width = canvas.width;
+    photo.height = canvas.height;
+    photo.getContext('2d').drawImage(canvas, 0, 0);
+    photo.setAttribute('aria-label', canvas.getAttribute('aria-label'));
+  });
 
   function commitOutfit(message) {
     feedback.textContent = message;
