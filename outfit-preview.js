@@ -62,24 +62,79 @@ function coverageBetween(value, low, high) {
   return Math.max(0, Math.min(1, (value - low) / (high - low)));
 }
 
+const unknownZone = 255;
+
+function matteAt(data, index, core, directions, zone) {
+  const pixel = index * 4;
+  const r = data[pixel];
+  const g = data[pixel + 1];
+  const b = data[pixel + 2];
+  let bestScore = 1050;
+  let matte;
+  for (const direction of directions) {
+    let before = index - direction * 2;
+    let after = index + direction * 2;
+    for (let step = 1; step < 5 && core[before] === unknownZone; step++) before -= direction;
+    for (let step = 1; step < 5 && core[after] === unknownZone; step++) after += direction;
+    const first = core[before];
+    const second = core[after];
+    if (first === unknownZone || second === unknownZone || first === second || (zone && first !== zone && second !== zone)) continue;
+
+    const from = before * 4;
+    const to = after * 4;
+    const red = data[to] - data[from];
+    const green = data[to + 1] - data[from + 1];
+    const blue = data[to + 2] - data[from + 2];
+    const length = red * red + green * green + blue * blue;
+    if (length < 420) continue;
+    const deltaR = r - data[from];
+    const deltaG = g - data[from + 1];
+    const deltaB = b - data[from + 2];
+    const brightnessDelta = red * .213 + green * .715 + blue * .072;
+    const toneDelta = deltaR * .213 + deltaG * .715 + deltaB * .072;
+    const colorMix = (deltaR * red + deltaG * green + deltaB * blue) / length;
+    const blend = Math.abs(brightnessDelta) > 30 ? toneDelta / brightnessDelta : colorMix;
+    const mix = Math.max(0, Math.min(1, blend));
+    const toneError = toneDelta - mix * brightnessDelta;
+    const score = (deltaR - mix * red) ** 2 + (deltaG - mix * green) ** 2 + (deltaB - mix * blue) ** 2
+      + toneError ** 2 * 2 + 2 * (Math.abs(index - before) + Math.abs(index - after)) / Math.abs(direction);
+    if (score >= bestScore) continue;
+    bestScore = score;
+    matte = [before, after, first, second, Math.round(mix * 255)];
+  }
+  return matte;
+}
+
+function surroundedBy(zones, index, width, zone) {
+  const above = index - width;
+  const below = index + width;
+  return zones[index - 1] === zone && zones[index + 1] === zone
+    && zones[above - 1] === zone && zones[above] === zone && zones[above + 1] === zone
+    && zones[below - 1] === zone && zones[below] === zone && zones[below + 1] === zone;
+}
+
 function masksFor(data, width, height, hasOuterwear) {
   const masks = [[], [], []];
+  const edges = [];
+  const boundaries = [];
   const histograms = masks.map(() => new Uint32Array(256));
   const count = [0, 0, 0];
+  const zones = new Uint8Array(width * height);
+  const weights = new Uint8Array(zones.length);
+  const top = Math.round(height * .155);
+  const bottom = Math.ceil(height * .948);
+  const left = Math.round(width * .13);
+  const right = Math.ceil(width * .87);
 
-  // Every plate was photographed with three distinct garment hues. Constrain
-  // each hue to its body area before recoloring, leaving skin and set intact.
-  for (let y = Math.round(height * .155); y < height * .948; y++) {
+  // Photographic shadows keep the marker channel order even near grey.
+  for (let y = top; y < bottom; y++) {
     const row = y / height;
-    for (let x = Math.round(width * .13); x < width * .87; x++) {
+    for (let x = left; x < right; x++) {
       const index = y * width + x;
       const offset = index * 4;
       const r = data[offset];
       const g = data[offset + 1];
       const b = data[offset + 2];
-
-      // The photographic shadows are often close to grey. Channel ordering
-      // retains those folds where an HSV saturation threshold would drop them.
       const rose = row < .65
         ? coverageBetween(r - g, 8, 18) * coverageBetween(b - g, -15, -5) : 0;
       const sage = hasOuterwear && row < .56
@@ -89,7 +144,8 @@ function masksFor(data, width, height, hasOuterwear) {
       const coverage = Math.max(rose, sage, blue);
       if (coverage < .07) continue;
       const zone = coverage === blue ? 2 : coverage === sage || !hasOuterwear ? 1 : 0;
-      masks[zone].push(index * 256 + Math.round(coverage * 255));
+      zones[index] = zone + 1;
+      weights[index] = Math.round(coverage * 255);
       if (coverage > .72) {
         histograms[zone][luminance(r, g, b)]++;
         count[zone]++;
@@ -101,10 +157,51 @@ function masksFor(data, width, height, hasOuterwear) {
   if (count[hasOuterwear ? 0 : 1] < minPixels || count[2] < minPixels) {
     throw new Error('Das Styling-Foto konnte nicht der Farbauswahl zugeordnet werden.');
   }
-  return masks.map((mask, index) => ({
-    pixels: Uint32Array.from(mask),
-    baseShade: count[index] ? median(histograms[index], count[index]) : 100,
-  }));
+
+  const core = new Uint8Array(zones.length);
+  const directions = [1, width, width - 1, width + 1, 2 * width - 1, 2 * width + 1, width - 2, width + 2];
+  for (let y = top; y < bottom; y++) {
+    for (let x = left; x < right; x++) {
+      const index = y * width + x;
+      const zone = zones[index];
+      const interior = surroundedBy(zones, index, width, zone);
+      core[index] = interior && (!zone || weights[index] >= 240) ? zone : unknownZone;
+    }
+  }
+
+  for (let y = top - 1; y <= bottom; y++) {
+    for (let x = left - 1; x <= right; x++) {
+      const index = y * width + x;
+      const zone = zones[index];
+      const nearBoundary = !surroundedBy(zones, index, width, zone)
+        || zones[index - 2] !== zone || zones[index + 2] !== zone
+        || zones[index - width * 2] !== zone || zones[index + width * 2] !== zone;
+      if (!nearBoundary) {
+        if (zone) masks[zone - 1].push(index * 256 + 255);
+        continue;
+      }
+      boundaries.push(index);
+      const matte = matteAt(data, index, core, directions, zone);
+      if (matte) {
+        const [before, after, first, second, afterWeight] = matte;
+        const dominant = afterWeight < 8 ? first : afterWeight > 247 ? second : -1;
+        if (dominant === 0) continue;
+        if (dominant < 0) edges.push(index, before, after, first, second, afterWeight);
+        else masks[dominant - 1].push(index * 256 + 255);
+      } else if (zone) {
+        masks[zone - 1].push(index * 256 + weights[index]);
+      }
+    }
+  }
+
+  return {
+    zones: masks.map((mask, index) => ({
+      pixels: Uint32Array.from(mask),
+      baseShade: count[index] ? median(histograms[index], count[index]) : 100,
+    })),
+    edges: Uint32Array.from(edges),
+    boundaries: Uint32Array.from(boundaries),
+  };
 }
 
 async function preparePlate(src, right, hasOuterwear) {
@@ -180,8 +277,7 @@ function colorTable(target, reference) {
   return table;
 }
 
-function applyColor(output, mask, target) {
-  const table = colorTable(target, mask.baseShade);
+function applyColor(output, mask, table) {
   for (const entry of mask.pixels) {
     const offset = (entry >>> 8) * 4;
     const opacity = (entry & 255) / 255;
@@ -191,6 +287,67 @@ function applyColor(output, mask, target) {
       output[index] += (table[shade + channel] - output[index]) * opacity;
     }
   }
+}
+
+function applyEdges(output, source, pixels, tables) {
+  for (let edge = 0; edge < pixels.length; edge += 6) {
+    const offset = pixels[edge] * 4;
+    const first = pixels[edge + 1] * 4;
+    const second = pixels[edge + 2] * 4;
+    const firstTable = tables[pixels[edge + 3] - 1];
+    const secondTable = tables[pixels[edge + 4] - 1];
+    const mix = pixels[edge + 5] / 255;
+    const firstShade = luminance(source[first], source[first + 1], source[first + 2]) * 3;
+    const secondShade = luminance(source[second], source[second + 1], source[second + 2]) * 3;
+    for (let channel = 0; channel < 3; channel++) {
+      const firstShift = firstTable ? (firstTable[firstShade + channel] - source[first + channel]) * (1 - mix) : 0;
+      const secondShift = secondTable ? (secondTable[secondShade + channel] - source[second + channel]) * mix : 0;
+      const reconstructed = source[first + channel] * (1 - mix) + source[second + channel] * mix;
+      const detail = source[offset + channel] - reconstructed;
+      output[offset + channel] = reconstructed + detail * .42 + firstShift + secondShift;
+    }
+  }
+}
+
+function cleanOutline(output, source, boundary, width) {
+  // Repair isolated dark pixels only where the original had a continuous
+  // tonal transition, so genuine fabric seams and zipper details survive.
+  const offsets = [4, width * 4, (width - 1) * 4, (width + 1) * 4];
+  const corrections = [];
+  const shade = (data, offset) => luminance(data[offset], data[offset + 1], data[offset + 2]);
+
+  for (const index of boundary) {
+    const offset = index * 4;
+    const original = shade(source, offset);
+    const dyed = shade(output, offset);
+    let strongest = 13;
+    let replacement;
+    for (const step of offsets) {
+      const first = offset - step;
+      const second = offset + step;
+      const firstDyed = shade(output, first);
+      const secondDyed = shade(output, second);
+      const gain = Math.min(firstDyed, secondDyed) - dyed;
+      if (gain <= strongest) continue;
+      const firstOriginal = shade(source, first);
+      const secondOriginal = shade(source, second);
+      if (original < Math.min(firstOriginal, secondOriginal) - 14
+          || original > Math.max(firstOriginal, secondOriginal) + 6) continue;
+      const contrast = secondOriginal - firstOriginal;
+      const mix = Math.abs(contrast) > 6
+        ? Math.max(0, Math.min(1, (original - firstOriginal) / contrast)) : .5;
+      replacement = [first, second, mix];
+      strongest = gain;
+    }
+    if (!replacement) continue;
+    const [first, second, mix] = replacement;
+    const channels = [0, 1, 2].map(channel => {
+      const reconstructed = output[first + channel] * (1 - mix) + output[second + channel] * mix;
+      return reconstructed * .9 + output[offset + channel] * .1;
+    });
+    corrections.push([offset, channels]);
+  }
+  for (const [offset, channels] of corrections) output.set(channels, offset);
 }
 
 /**
@@ -218,7 +375,11 @@ export async function renderOutfitPreview(canvas, { model, trousers, shirt, jack
   if (activePaint.get(canvas) !== paint) return false;
 
   const output = new ImageData(new Uint8ClampedArray(bitmap.data), bitmap.width, bitmap.height);
-  masks.forEach((mask, index) => applyColor(output.data, mask, colors[index]));
+  const tables = masks.zones.map((zone, index) => colorTable(colors[index], zone.baseShade));
+  masks.zones.forEach((zone, index) => applyColor(output.data, zone, tables[index]));
+  applyEdges(output.data, bitmap.data, masks.edges, tables);
+  const brightenedFabric = colors.some((color, index) => luminance(...color) > masks.zones[index].baseShade + 30);
+  if (brightenedFabric) cleanOutline(output.data, bitmap.data, masks.boundaries, bitmap.width);
   if (canvas.width !== bitmap.width) canvas.width = bitmap.width;
   if (canvas.height !== bitmap.height) canvas.height = bitmap.height;
   const context = canvas.getContext('2d');

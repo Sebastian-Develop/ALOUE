@@ -1,3 +1,5 @@
+import { matchOutfit } from './outfit-match.js?v=look-refine';
+
 const slots = {
   jacket: { label: 'Jacke oder Weste', categories: ['jacken', 'wendewesten'] },
   shirt: { label: 'Oberteil', categories: ['t-shirts-longsleeves'] },
@@ -22,22 +24,6 @@ const presets = {
   },
 };
 
-const palette = {
-  Espresso: ['Kit', 'Dunkelgrau', 'Beige', 'Falcon'],
-  Beige: ['Falcon', 'Kit', 'Espresso', 'Dunkelblau'],
-  Kit: ['Falcon', 'Dunkelgrau', 'Espresso', 'Beige'],
-  Falcon: ['Kit', 'Espresso', 'Teal Blue', 'Beige'],
-  Schwarz: ['Kit', 'Grau', 'Dunkelgrau', 'Beige'],
-  Grau: ['Kit', 'Dunkelblau', 'Schwarz', 'Espresso'],
-  Dunkelgrau: ['Kit', 'Espresso', 'Beige', 'Dunkelblau'],
-  Dunkelblau: ['Kit', 'Dunkelgrau', 'Beige', 'Cloud Blue'],
-  'Cloud Blue': ['Kit', 'Dunkelblau', 'Dunkelgrau', 'Beige'],
-  'Teal Blue': ['Falcon', 'Kit', 'Dunkelgrau', 'Beige'],
-  Oliv: ['Kit', 'Beige', 'Espresso', 'Falcon'],
-  'Deep Depth': ['Kit', 'Falcon', 'Beige', 'Dunkelgrau'],
-  Bordeaux: ['Kit', 'Dunkelgrau', 'Falcon', 'Schwarz'],
-};
-
 function element(tag, className, text = '') {
   const node = document.createElement(tag);
   node.className = className;
@@ -56,10 +42,6 @@ function normalize(value) {
     .trim();
 }
 
-function tones(product) {
-  return product.tone.split(/\s*\/\s*/);
-}
-
 function previewKind(slot, product) {
   if (slot === 'trousers') return product.id.includes('-l34-') ? 'trousers-l34' : 'trousers-l32';
   if (slot === 'shirt') return product.id.includes('-long-sleeves-') ? 'longsleeve' : 't-shirt';
@@ -67,40 +49,6 @@ function previewKind(slot, product) {
   if (product.collections.includes('wendejacken')) return 'reversible-jacket';
   if (product.collections.includes('kapuzenjacken')) return 'parka';
   return 'wool-jacket';
-}
-
-function affinity(product, reference) {
-  let best = 0;
-  for (const a of tones(product)) {
-    for (const b of tones(reference)) {
-      const rank = palette[a]?.indexOf(b) ?? -1;
-      const reverse = palette[b]?.indexOf(a) ?? -1;
-      const points = Math.max(rank < 0 ? 0 : 4 - rank, reverse < 0 ? 0 : 4 - reverse, a === b ? 1 : 0);
-      best = Math.max(points, best);
-    }
-  }
-  return best;
-}
-
-function matchOutfit(groups, products, selection, anchor, preferredLook) {
-  const next = { ...selection };
-  const references = [];
-  if (products.has(selection[anchor])) references.push(products.get(selection[anchor]));
-
-  for (const slot of Object.keys(slots)) {
-    if (slot === anchor || (slot === 'jacket' && !selection.jacket)) continue;
-    let bestScore = -Infinity;
-    for (const product of groups[slot]) {
-      const preference = product.id === preferredLook[slot] ? 0.5 : 0;
-      const score = references.reduce((total, reference) => total + affinity(product, reference), preference);
-      if (score > bestScore) {
-        next[slot] = product.id;
-        bestScore = score;
-      }
-    }
-    if (products.has(next[slot])) references.push(products.get(next[slot]));
-  }
-  return next;
 }
 
 function initOutfitBuilder(root, catalog) {
@@ -122,6 +70,9 @@ function initOutfitBuilder(root, catalog) {
   const search = root.querySelector('[data-outfit-search]');
   const count = root.querySelector('[data-outfit-count]');
   const summary = root.querySelector('[data-outfit-summary]');
+  const match = root.querySelector('[data-outfit-match]');
+  const matchNote = root.querySelector('[data-outfit-match-note]');
+  const matchReset = root.querySelector('[data-outfit-match-reset]');
   const layerButton = root.querySelector('[data-outfit-layer]');
   const feedback = root.querySelector('[data-outfit-feedback]');
   const canvas = root.querySelector('[data-outfit-canvas]');
@@ -139,6 +90,7 @@ function initOutfitBuilder(root, catalog) {
       slot, products.has(presets.espresso[slot]) ? presets.espresso[slot] : groups[slot][0]?.id || null,
     ])),
     anchor: '',
+    pinned: new Set(),
     showJacket: true,
   };
   let previewVersion = 0;
@@ -191,7 +143,7 @@ function initOutfitBuilder(root, catalog) {
       const noJacket = element('button', 'outfit-option outfit-option--none');
       noJacket.type = 'button';
       noJacket.dataset.outfitChoice = '';
-      noJacket.append(element('span', 'outfit-option-name', 'Ohne Jacke'));
+      noJacket.append(element('span', 'outfit-option-name', 'Ohne Jacke oder Weste'));
       choices.unshift(noJacket);
     }
     if (!choices.length) choices.push(element('p', 'outfit-empty', 'Keine passenden Stücke gefunden.'));
@@ -210,6 +162,13 @@ function initOutfitBuilder(root, catalog) {
   function renderSelection() {
     markSelectedChoices();
     updateLayerButton();
+    const activeSlots = Object.keys(slots).filter(slot => state.items[slot]);
+    const allPinned = activeSlots.length > 0 && activeSlots.every(slot => state.pinned.has(slot));
+    match.disabled = allPinned;
+    matchReset.hidden = !allPinned;
+    matchNote.textContent = allPinned ? 'Alle Teile im Look sind fest gewählt.' :
+      state.pinned.size ? 'Deine gewählten Teile bleiben im Look.' : '';
+    matchNote.hidden = !matchNote.textContent;
     for (const button of presetButtons) {
       const preset = presets[button.dataset.outfitPreset];
       button.disabled = !preset || !Object.values(preset).every(id => products.has(id));
@@ -219,23 +178,45 @@ function initOutfitBuilder(root, catalog) {
       const row = element('li', 'outfit-selected');
       const product = selected(slot);
       row.append(element('span', 'outfit-selected-slot', label));
+      const variant = element('div', 'outfit-selected-variant');
       if (!product) {
-        row.append(element('span', 'outfit-selected-item', slot === 'jacket' ? 'Ohne Jacke' : 'Nicht gewählt'));
+        const empty = element('span', 'outfit-selected-item', slot === 'jacket' ? 'Ohne Jacke oder Weste' : 'Nicht gewählt');
+        if (slot === 'jacket') {
+          empty.dataset.outfitEmptyJacket = '';
+          empty.tabIndex = -1;
+        }
+        variant.append(empty);
       } else {
         const button = element('button', 'outfit-selected-item', product.name);
         button.type = 'button';
         button.dataset.product = product.id;
         button.append(element('small', '', product.tone));
-        row.append(button);
+        variant.append(button);
+        if (slot === 'jacket') {
+          const remove = element('button', 'outfit-remove');
+          remove.type = 'button';
+          remove.dataset.outfitRemoveJacket = '';
+          remove.setAttribute('aria-label', `${product.name} in ${product.tone} aus dem Look entfernen`);
+          const icon = element('span', '', '×');
+          icon.setAttribute('aria-hidden', 'true');
+          remove.append(icon);
+          variant.append(remove);
+        }
       }
+      row.append(variant);
       return row;
     }));
   }
 
   function updateLayerButton() {
     if (!layerButton) return;
-    layerButton.hidden = !selected('jacket');
+    const outerwear = selected('jacket');
+    layerButton.hidden = !outerwear;
     layerButton.setAttribute('aria-pressed', state.showJacket);
+    if (outerwear) {
+      const name = outerwear.collections.includes('wendewesten') ? 'Weste' : 'Jacke';
+      layerButton.textContent = `${name} in Vorschau zeigen`;
+    }
   }
 
   function showJacketInPreview(show) {
@@ -280,7 +261,7 @@ function initOutfitBuilder(root, catalog) {
     }
 
     try {
-      previewModule ??= import('./outfit-preview.js?v=photo-plates');
+      previewModule ??= import('./outfit-preview.js?v=photo-edge-matte');
       const { renderOutfitPreview } = await previewModule;
       if (version !== previewVersion) return;
       const rendered = await renderOutfitPreview(canvas, outfit);
@@ -312,6 +293,22 @@ function initOutfitBuilder(root, catalog) {
     updatePreview();
   }
 
+  function chooseItem(slot, id) {
+    const revealsJacket = slot === 'jacket' && id && !state.showJacket;
+    if (state.items[slot] === id && (!id || state.pinned.has(slot)) && !revealsJacket) return;
+    state.items[slot] = id;
+    if (id) {
+      state.pinned.add(slot);
+      state.anchor = slot;
+      if (slot === 'jacket') state.showJacket = true;
+    } else {
+      state.pinned.delete(slot);
+      if (state.anchor === slot) state.anchor = '';
+    }
+    const product = selected(slot);
+    commitOutfit(product ? `${product.name} in ${product.tone} ausgewählt.` : 'Jacke oder Weste aus dem Look entfernt.');
+  }
+
   root.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button || !root.contains(button)) return;
@@ -337,21 +334,25 @@ function initOutfitBuilder(root, catalog) {
       updatePreview();
     } else if (outfitPreset && presets[outfitPreset] && !button.disabled) {
       state.anchor = '';
+      state.pinned.clear();
       state.showJacket = true;
       state.items = { ...presets[outfitPreset] };
       commitOutfit('Kampagnenlook ausgewählt.');
       if (mobileStudio.matches && root.dataset.editorPanel) returnToLook();
     } else if (outfitChoice !== undefined) {
-      const id = outfitChoice || null;
-      if (id === state.items[state.slot]) return;
-      state.items[state.slot] = id;
-      state.anchor = state.slot;
-      if (state.slot === 'jacket' && id) state.showJacket = true;
-      const product = selected(state.slot);
-      commitOutfit(product ? `${product.name} in ${product.tone} ausgewählt.` : 'Jacke entfernt.');
-    } else if (button.hasAttribute('data-outfit-match')) {
+      chooseItem(state.slot, outfitChoice || null);
+    } else if (button.hasAttribute('data-outfit-remove-jacket')) {
+      chooseItem('jacket', null);
+      summary.querySelector('[data-outfit-empty-jacket]')?.focus({ preventScroll: true });
+    } else if (button === matchReset) {
+      state.pinned.clear();
+      state.anchor = '';
+      renderSelection();
+      feedback.textContent = 'Die Kombination ist für Vorschläge freigegeben.';
+      match.focus({ preventScroll: true });
+    } else if (button === match) {
       const preferred = presets[state.model] || presets.espresso;
-      state.items = matchOutfit(groups, products, state.items, state.anchor, preferred);
+      state.items = matchOutfit(groups, products, state.items, state.anchor, preferred, state.pinned);
       state.showJacket = true;
       commitOutfit('Passende Stücke für den Look ausgewählt.');
       if (mobileStudio.matches && root.dataset.editorPanel) returnToLook();

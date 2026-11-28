@@ -19,7 +19,7 @@
             <figcaption>Styling-Vorschau</figcaption>
           </figure>
           <div class="outfit-view-actions">
-            <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke anzeigen</button>
+            <button class="outfit-layer" data-outfit-layer type="button" aria-pressed="true" hidden>Jacke in Vorschau zeigen</button>
             <button class="outfit-expand" data-outfit-expand data-open="outfit-photo" type="button" disabled>Foto vergrößern <span aria-hidden="true">↗</span></button>
           </div>
           <div class="outfit-mobile-actions" role="group" aria-label="Look bearbeiten">
@@ -42,8 +42,10 @@
           <div class="outfit-selection" id="outfit-selection" data-outfit-panel="selection">
             <div class="outfit-selection-heading">
               <h3>Im Look</h3>
-              <button type="button" class="outfit-match" data-outfit-match>Passend kombinieren <span aria-hidden="true">↗</span></button>
+              <button type="button" class="outfit-match" data-outfit-match aria-describedby="outfit-match-note">Passend kombinieren <span aria-hidden="true">↗</span></button>
             </div>
+            <p class="outfit-match-note" id="outfit-match-note" data-outfit-match-note hidden></p>
+            <button type="button" class="outfit-match outfit-match-reset" data-outfit-match-reset hidden>Auswahl für Vorschläge freigeben</button>
             <ul class="outfit-summary" data-outfit-summary role="list"></ul>
           </div>
 
