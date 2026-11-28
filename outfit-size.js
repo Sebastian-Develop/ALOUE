@@ -51,6 +51,7 @@ export function recommendSize(product, slot, profile) {
 }
 
 export function initOutfitSize(section, getItems) {
+  const studio = section.closest('[data-outfit]');
   const editor = section.querySelector('[data-size-editor]');
   const form = section.querySelector('[data-size-form]');
   const extra = section.querySelector('[data-size-extra]');
@@ -108,7 +109,8 @@ export function initOutfitSize(section, getItems) {
     };
     render();
     editor.open = false;
-    title.focus();
+    title.focus({ preventScroll: true });
+    studio.scrollIntoView({ block: 'start' });
   });
   form.addEventListener('input', () => {
     clear.hidden = !Object.values(fields).some(input => input.value !== '');

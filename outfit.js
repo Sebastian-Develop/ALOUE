@@ -1,5 +1,5 @@
 import { matchOutfit } from './outfit-match.js?v=look-refine';
-import { initOutfitSize } from './outfit-size.js?v=size-advice';
+import { initOutfitSize } from './outfit-size.js?v=size-advice-scroll';
 
 const slots = {
   jacket: { label: 'Jacke oder Weste', categories: ['jacken', 'wendewesten'] },
