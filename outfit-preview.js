@@ -113,7 +113,7 @@ function surroundedBy(zones, index, width, zone) {
     && zones[below - 1] === zone && zones[below] === zone && zones[below + 1] === zone;
 }
 
-function masksFor(data, width, height, hasOuterwear) {
+function masksFor(data, width, height, hasOuterwear, preserveOuterwear) {
   const masks = [[], [], []];
   const edges = [];
   const boundaries = [];
@@ -135,10 +135,11 @@ function masksFor(data, width, height, hasOuterwear) {
       const r = data[offset];
       const g = data[offset + 1];
       const b = data[offset + 2];
-      const rose = row < .65
+      const rose = !preserveOuterwear && row < .65
         ? coverageBetween(r - g, 8, 18) * coverageBetween(b - g, -15, -5) : 0;
-      const sage = hasOuterwear && row < .56
-        ? coverageBetween(g - r, -7, 1) * coverageBetween(g - b, 1, 5) : 0;
+      const sage = hasOuterwear && row < .56 && (!preserveOuterwear || (x > width * .38 && x < width * .63))
+        ? coverageBetween(g - r, preserveOuterwear ? -1 : -7, preserveOuterwear ? 2 : 1)
+          * coverageBetween(g - b, 1, 5) : 0;
       const blue = row > .36
         ? coverageBetween(b - r, -1, 4) * coverageBetween(b - g, -2, 2) : 0;
       const coverage = Math.max(rose, sage, blue);
@@ -154,7 +155,7 @@ function masksFor(data, width, height, hasOuterwear) {
   }
 
   const minPixels = width * height * .012;
-  if (count[hasOuterwear ? 0 : 1] < minPixels || count[2] < minPixels) {
+  if (count[hasOuterwear && !preserveOuterwear ? 0 : 1] < minPixels || count[2] < minPixels) {
     throw new Error('Das Styling-Foto konnte nicht der Farbauswahl zugeordnet werden.');
   }
 
@@ -204,7 +205,7 @@ function masksFor(data, width, height, hasOuterwear) {
   };
 }
 
-async function preparePlate(src, right, hasOuterwear) {
+async function preparePlate(src, right, hasOuterwear, preserveOuterwear) {
   const photo = await loadPhoto(src);
   const half = Math.floor(photo.naturalWidth / 2);
   const cropHeight = Math.min(photo.naturalHeight, Math.floor(half * 4 / 3));
@@ -219,7 +220,7 @@ async function preparePlate(src, right, hasOuterwear) {
   const y = Math.floor((photo.naturalHeight - cropHeight) / 2);
   context.drawImage(photo, x, y, cropWidth, cropHeight, 0, 0, work.width, work.height);
   const bitmap = context.getImageData(0, 0, work.width, work.height);
-  return { bitmap, masks: masksFor(bitmap.data, work.width, work.height, hasOuterwear) };
+  return { bitmap, masks: masksFor(bitmap.data, work.width, work.height, hasOuterwear, preserveOuterwear) };
 }
 
 function parseSwatch(value) {
@@ -289,7 +290,7 @@ function applyColor(output, mask, table) {
   }
 }
 
-function applyEdges(output, source, pixels, tables) {
+function applyEdges(output, source, pixels, tables, preserveDetail) {
   for (let edge = 0; edge < pixels.length; edge += 6) {
     const offset = pixels[edge] * 4;
     const first = pixels[edge + 1] * 4;
@@ -299,12 +300,17 @@ function applyEdges(output, source, pixels, tables) {
     const mix = pixels[edge + 5] / 255;
     const firstShade = luminance(source[first], source[first + 1], source[first + 2]) * 3;
     const secondShade = luminance(source[second], source[second + 1], source[second + 2]) * 3;
+    const changeInShade = (table, shade) => table
+      ? Math.abs(luminance(table[shade], table[shade + 1], table[shade + 2]) - shade / 3) : 0;
+    const detailStrength = preserveDetail
+      ? 1 - .58 * coverageBetween(Math.max(changeInShade(firstTable, firstShade), changeInShade(secondTable, secondShade)), 20, 70)
+      : .42;
     for (let channel = 0; channel < 3; channel++) {
       const firstShift = firstTable ? (firstTable[firstShade + channel] - source[first + channel]) * (1 - mix) : 0;
       const secondShift = secondTable ? (secondTable[secondShade + channel] - source[second + channel]) * mix : 0;
       const reconstructed = source[first + channel] * (1 - mix) + source[second + channel] * mix;
       const detail = source[offset + channel] - reconstructed;
-      output[offset + channel] = reconstructed + detail * .42 + firstShift + secondShift;
+      output[offset + channel] = reconstructed + detail * detailStrength + firstShift + secondShift;
     }
   }
 }
@@ -363,12 +369,14 @@ export async function renderOutfitPreview(canvas, { model, trousers, shirt, jack
   const outerKind = jacket ? garmentKind(jacket, 'wool-jacket') : '';
   const kind = outerKind || topKind;
   if (!plateKinds.has(kind)) throw new Error('Für dieses Stück ist keine Styling-Vorschau verfügbar.');
-  const plateName = kind === 'gilet' && topKind === 'longsleeve' ? 'gilet-longsleeve' : kind;
+  const preserveOuterwear = jacket?.id === 'wool-blend-jacket-beige';
+  const plateName = preserveOuterwear ? 'wool-jacket-beige'
+    : kind === 'gilet' && topKind === 'longsleeve' ? 'gilet-longsleeve' : kind;
   const src = new URL(`style-plate-${plateName}.jpg`, import.meta.url).href;
   const key = `${plateName}:${right}`;
   const [{ bitmap, masks }, ...colors] = await Promise.all([
-    cached(plateCache, key, () => preparePlate(src, right, Boolean(jacket)), 4),
-    chooseColor(jacket, fallbackColors.outer),
+    cached(plateCache, key, () => preparePlate(src, right, Boolean(jacket), preserveOuterwear), 4),
+    preserveOuterwear ? fallbackColors.outer : chooseColor(jacket, fallbackColors.outer),
     chooseColor(shirt, fallbackColors.shirt),
     chooseColor(trousers, fallbackColors.trousers),
   ]);
@@ -377,8 +385,9 @@ export async function renderOutfitPreview(canvas, { model, trousers, shirt, jack
   const output = new ImageData(new Uint8ClampedArray(bitmap.data), bitmap.width, bitmap.height);
   const tables = masks.zones.map((zone, index) => colorTable(colors[index], zone.baseShade));
   masks.zones.forEach((zone, index) => applyColor(output.data, zone, tables[index]));
-  applyEdges(output.data, bitmap.data, masks.edges, tables);
-  const brightenedFabric = colors.some((color, index) => luminance(...color) > masks.zones[index].baseShade + 30);
+  applyEdges(output.data, bitmap.data, masks.edges, tables, preserveOuterwear);
+  const brightenedFabric = masks.zones.some(({ pixels, baseShade }, index) =>
+    pixels.length && luminance(...colors[index]) > baseShade + 30);
   if (brightenedFabric) cleanOutline(output.data, bitmap.data, masks.boundaries, bitmap.width);
   if (canvas.width !== bitmap.width) canvas.width = bitmap.width;
   if (canvas.height !== bitmap.height) canvas.height = bitmap.height;

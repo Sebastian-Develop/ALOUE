@@ -252,6 +252,7 @@ function initOutfitBuilder(root, catalog) {
       const product = selected(slot);
       if (!product) continue;
       outfit[slot] = {
+        id: product.id,
         src: product.photo,
         kind: previewKind(slot, product),
         tone: product.tone,
@@ -261,7 +262,7 @@ function initOutfitBuilder(root, catalog) {
     }
 
     try {
-      previewModule ??= import('./outfit-preview.js?v=photo-edge-matte');
+      previewModule ??= import('./outfit-preview.js?v=beige-wool-plate');
       const { renderOutfitPreview } = await previewModule;
       if (version !== previewVersion) return;
       const rendered = await renderOutfitPreview(canvas, outfit);
