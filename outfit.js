@@ -1,4 +1,5 @@
 import { matchOutfit } from './outfit-match.js?v=look-refine';
+import { initOutfitSize } from './outfit-size.js?v=size-advice';
 
 const slots = {
   jacket: { label: 'Jacke oder Weste', categories: ['jacken', 'wendewesten'] },
@@ -98,6 +99,8 @@ function initOutfitBuilder(root, catalog) {
   let previewModule;
 
   const selected = slot => products.get(state.items[slot]);
+  const updateSizeAdvice = initOutfitSize(root.querySelector('[data-outfit-size]'), () =>
+    Object.entries(slots).map(([slot, { label }]) => ({ slot, label, product: selected(slot) })));
 
   function setMobilePanel(panel) {
     if (panel) root.dataset.editorPanel = panel;
@@ -206,6 +209,7 @@ function initOutfitBuilder(root, catalog) {
       row.append(variant);
       return row;
     }));
+    updateSizeAdvice();
   }
 
   function updateLayerButton() {

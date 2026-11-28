@@ -5,6 +5,39 @@
         <p>Wähle ein Model, probiere einen der Looks oder stelle aus dem gesamten Sortiment dein Outfit zusammen.</p>
       </header>
 
+      <section class="outfit-size" data-outfit-size aria-labelledby="outfit-size-title" hidden>
+        <details data-size-editor open>
+          <summary id="outfit-size-title">Größenberatung</summary>
+          <form data-size-form autocomplete="off">
+            <p>Finde eine Startgröße für die Teile in deinem Look.</p>
+            <div class="outfit-size-fields">
+              <label>Körpergröße <span class="outfit-size-input"><input type="number" inputmode="decimal" data-size-field="height" min="120" max="225" step="any" placeholder="180" required> <span aria-hidden="true">cm</span><span class="visually-hidden">in Zentimetern</span></span></label>
+              <label>Gewicht <span class="outfit-size-input"><input type="number" inputmode="decimal" data-size-field="weight" min="35" max="220" step="any" placeholder="78" required> <span aria-hidden="true">kg</span><span class="visually-hidden">in Kilogramm</span></span></label>
+            </div>
+            <details class="outfit-size-extra" data-size-extra>
+              <summary>Mit Maßband verfeinern</summary>
+              <div class="outfit-size-fields">
+                <label>Brustumfang <span class="outfit-size-input"><input type="number" inputmode="decimal" data-size-field="chest" min="55" max="200" step="any" placeholder="100"> <span aria-hidden="true">cm</span><span class="visually-hidden">in Zentimetern</span></span><small>An der breitesten Stelle messen.</small></label>
+                <label>Taillenumfang <span class="outfit-size-input"><input type="number" inputmode="decimal" data-size-field="waist" min="50" max="200" step="any" placeholder="86"> <span aria-hidden="true">cm</span><span class="visually-hidden">in Zentimetern</span></span><small>An der schmalsten Stelle messen.</small></label>
+              </div>
+            </details>
+            <div class="outfit-size-actions">
+              <button class="action dark" type="submit">Größe berechnen</button>
+              <button class="outfit-size-text-action" data-size-clear type="reset" hidden>Maße löschen</button>
+            </div>
+            <p class="outfit-size-note">Deine Eingaben bleiben auf dieser Seite.</p>
+          </form>
+        </details>
+        <div class="outfit-size-result" data-size-result hidden>
+          <h3 data-size-result-title tabindex="-1">Größen für deinen Look</h3>
+          <ul data-size-recommendations role="list" aria-live="polite"></ul>
+          <div class="outfit-size-result-footer">
+            <p class="outfit-size-note" data-size-basis></p>
+            <button type="button" class="outfit-size-text-action" data-size-refine>Maße ergänzen</button>
+          </div>
+        </div>
+      </section>
+
       <div class="outfit-workspace">
         <div class="outfit-preview">
           <div class="outfit-models" role="group" aria-label="Model wählen">
